@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulso da Matéria · Simulado</title>
+<style>
+:root{--bg:#0d1017;--panel:#171b28;--panel2:#1d2332;--ink:#e7ecf7;--muted:#9aa6c4;
+--laranja:#ff7a3d;--laranja-d:#e05f22;--ciano:#38d9e0;--roxo:#9b7cff;--amarelo:#ffd23f;--alerta:#f8716b;--ok:#5ad16f;--ok-d:#2fae49;--line:#2d3650;--shadow:0 10px 30px rgba(0,0,0,.45);}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 700px at 80% -10%,#20130a 0,var(--bg) 60%);color:var(--ink);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 90px}
+header.top{background:linear-gradient(120deg,#2a0e0c,#7a241c 60%,#c23024);border-radius:18px;padding:22px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden;border-bottom:4px solid var(--amarelo)}
+header.top:before{content:"📝";position:absolute;right:14px;top:-4px;font-size:76px;opacity:.16}
+header.top h1{margin:0 0 4px;font-size:1.5rem}
+header.top .sub{color:#ffd2cd;font-weight:600}
+.kick{display:inline-block;background:#1a0705;color:#ffb0a8;font-size:.72rem;font-weight:700;letter-spacing:.12em;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+.colheader{background:#0f1420;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:14px 0;font-size:.9rem;color:var(--muted)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin:16px 0;box-shadow:var(--shadow)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.btn{background:#1d233280;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:.9rem;cursor:pointer}
+.btn:hover{border-color:var(--ciano);color:var(--ciano)}
+.btn.primary{background:var(--alerta);color:#2a0007;font-weight:700;border:none}
+.btn.primary:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4)}
+.saveinfo{font-size:.78rem;color:var(--muted)}
+.q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:14px 0;box-shadow:var(--shadow)}
+.q .num{font-weight:700;color:var(--amarelo)}
+.tipo{font-size:.66rem;font-weight:700;letter-spacing:.07em;padding:2px 8px;border-radius:6px;margin-left:8px}
+.tipo.mc{background:#0e2235;color:#8fd6ff;border:1px solid #24507f}
+.tipo.som{background:#3a2b0e;color:#ffd98a;border:1px solid var(--amarelo)}
+.tipo.rom{background:#241a3a;color:#c3b0ff;border:1px solid var(--roxo)}
+.q .txt{margin:8px 0 12px}
+.op{display:block;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:10px 14px;margin:8px 0;cursor:pointer}
+.op:hover{border-color:var(--ciano)}
+.op.sel{border-color:var(--ciano);background:#0e2a2b}
+.op .l{font-weight:700;color:var(--amarelo);margin-right:8px}
+.op.correct{border-color:var(--ok);background:#0e2a1e}
+.op.wrong{border-color:var(--alerta);background:#2a0a12}
+.why{font-size:.85rem;margin-top:6px;display:none}
+.op.correct .why{display:block;color:#9dffcf}.op.wrong .why{display:block;color:#ffb7c4}
+.afirm{background:#0f1420;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:6px 0;font-size:.94rem}
+.afirm .vf{display:none;font-weight:700;margin-left:6px}
+.afirm.rev .vf{display:inline}
+.somitem{display:flex;gap:10px;align-items:flex-start;background:#0f1420;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:6px 0}
+.somitem .val{font-weight:700;color:var(--amarelo);min-width:26px}
+.somitem .vf{display:none;font-weight:700;margin-left:6px}
+.somitem.rev .vf{display:inline}
+.sominput{margin-top:8px}
+.sominput input{background:#0a1220;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 12px;width:110px;font-size:1rem}
+.locked .op{pointer-events:none}
+.locked input{pointer-events:none;opacity:.85}
+.codebox{background:#0f1420;border:1px solid var(--amarelo);border-radius:12px;padding:16px 18px;margin:16px 0;display:none}
+.codebox input{background:#0a1220;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:1rem;width:160px;text-transform:uppercase}
+.result{font-size:1.1rem;font-weight:700}.big{font-size:1.6rem;color:var(--amarelo);letter-spacing:.06em}
+.nav{display:flex;justify-content:space-between;margin-top:22px;flex-wrap:wrap;gap:10px}
+a.next,a.prev{display:inline-block;text-decoration:none;padding:11px 18px;border-radius:12px;font-weight:700}
+a.next{background:linear-gradient(120deg,var(--laranja-d),var(--laranja));color:#20100a}
+a.prev{background:#1d233280;color:var(--ink);border:1px solid var(--line)}
+.foot{text-align:center;color:var(--muted);font-size:.8rem;margin-top:30px}
+.modal-bg{position:fixed;inset:0;background:rgba(4,8,18,.7);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:440px;padding:22px;box-shadow:var(--shadow)}
+.modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="kick">PULSO DA MATÉRIA · PROVA DE TREINO</span>
+    <h1>📝 Simulado — 25 questões</h1>
+    <div class="sub">Estilo vestibular: somatório + números romanos + múltipla escolha</div>
+  </header>
+  <div class="colheader"><b>Colégio Coração Feliz · Física · 9º ano</b><br>
+    Termometria · Calorimetria · O estudo do som. Cada questão vale 1 ponto (25 no total).
+    Nas questões de <b>somatório</b>, some os valores das afirmativas corretas e digite o total.</div>
+
+  <div class="panel"><div class="bar">
+    <div><strong>Painel do estudo</strong><div class="saveinfo" id="saveinfo">Respostas salvam sozinhas.</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="doExport()">📥 Exportar</button>
+      <button class="btn" onclick="document.getElementById('imp').click()">📤 Importar</button>
+      <button class="btn" onclick="askReset()">🗑️ Zerar</button>
+      <input type="file" id="imp" accept="application/json" style="display:none" onchange="doImport(event)">
+    </div></div>
+    <div class="saveinfo" id="prog" style="margin-top:6px">0 de 25 respondidas.</div>
+  </div>
+
+  <div id="sim"></div>
+
+  <button class="btn primary" id="enviar" onclick="enviar()" disabled style="width:100%;padding:14px;font-size:1rem">📨 Enviar simulado</button>
+
+  <div class="codebox" id="codebox">
+    <div class="result">Você acertou <span class="big" id="acertos">0</span> de 25.</div>
+    <p>Código para liberar o gabarito e mostrar aos pais:</p>
+    <p class="big" id="codigo">SIM-00-XX</p>
+    <input id="codein" placeholder="SIM-00-XX" maxlength="9">
+    <button class="btn primary" onclick="verGabarito()">Ver gabarito</button>
+    <div class="saveinfo" id="codemsg" style="margin-top:8px"></div>
+  </div>
+
+  <div class="nav">
+    <a class="prev" href="resumo.html">← Resumo</a>
+    <a class="next" href="index.html">Início do kit 🏠</a>
+  </div>
+  <div class="foot">Pulso da Matéria · Simulado · jovem aprendiz</div>
+</div>
+
+<div class="modal-bg" id="modalbg"><div class="modal"><h3 id="mtit"></h3><p id="mtxt" style="color:var(--muted)"></p>
+  <div class="row"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn primary" id="mok" style="background:linear-gradient(120deg,var(--ok-d),var(--ok));color:#04140d">OK</button></div></div></div>
+
+<script>
+/* ================= QUESTÕES ================= */
+const QS=[
+/* ---- 5 SOMATÓRIO ---- */
+{type:"som",q:"Sobre <b>temperatura, calor e equilíbrio térmico</b>, é correto o que se afirma em:",itens:[
+ {v:1,t:"Temperatura mede o grau de agitação das partículas de um corpo.",ok:true,why:"Verdadeira: é a definição de temperatura."},
+ {v:2,t:"Calor é energia em trânsito que vai do corpo mais frio para o mais quente.",ok:false,why:"Falsa: o calor flui do mais QUENTE para o mais frio."},
+ {v:4,t:"No equilíbrio térmico os corpos ficam com a mesma temperatura.",ok:true,why:"Verdadeira: é quando a troca de calor cessa."},
+ {v:8,t:"A sensação térmica é uma medida precisa da temperatura.",ok:false,why:"Falsa: a sensação térmica é imprecisa; o certo é o termômetro."},
+ {v:16,t:"O zero absoluto (0 K) equivale a −273 °C.",ok:true,why:"Verdadeira: 0 K = −273 °C."}
+]},
+{type:"som",q:"Sobre as <b>escalas termométricas</b> (conversões), é correto o que se afirma em:",itens:[
+ {v:1,t:"25 °C equivalem a 298 K.",ok:true,why:"Verdadeira: 25 + 273 = 298."},
+ {v:2,t:"100 °C equivalem a 373 K.",ok:true,why:"Verdadeira: 100 + 273 = 373."},
+ {v:4,t:"32 °F equivalem a 10 °C.",ok:false,why:"Falsa: 32 °F equivalem a 0 °C (água congelando)."},
+ {v:8,t:"0 °C equivalem a 32 °F.",ok:true,why:"Verdadeira: é a fusão da água em Fahrenheit."},
+ {v:16,t:"−273 °C equivalem a 0 K.",ok:true,why:"Verdadeira: é o zero absoluto."}
+]},
+{type:"som",q:"Sobre a <b>dilatação térmica</b>, é correto o que se afirma em:",itens:[
+ {v:1,t:"Ao serem aquecidos, os sólidos geralmente dilatam (aumentam de tamanho).",ok:true,why:"Verdadeira: as partículas se afastam."},
+ {v:2,t:"Os líquidos dilatam menos que os sólidos.",ok:false,why:"Falsa: líquidos dilatam MAIS que sólidos."},
+ {v:4,t:"A dilatação volumétrica envolve as três dimensões do corpo.",ok:true,why:"Verdadeira: é a dilatação do volume."},
+ {v:8,t:"A água, entre 0 °C e 4 °C, aumenta de volume ao ser resfriada.",ok:true,why:"Verdadeira: é o comportamento anômalo da água."},
+ {v:16,t:"As juntas de dilatação servem para impedir que o material dilate.",ok:false,why:"Falsa: elas dão ESPAÇO para o material dilatar sem rachar."}
+]},
+{type:"som",q:"Sobre a <b>propagação do calor</b>, é correto o que se afirma em:",itens:[
+ {v:1,t:"A condução precisa de um meio material para acontecer.",ok:true,why:"Verdadeira: passa de partícula a partícula."},
+ {v:2,t:"A irradiação não precisa de meio material (ocorre no vácuo).",ok:true,why:"Verdadeira: viaja por ondas eletromagnéticas."},
+ {v:4,t:"A convecção acontece por correntes dentro de fluidos.",ok:true,why:"Verdadeira: o fluido quente sobe e o frio desce."},
+ {v:8,t:"Os metais são bons isolantes térmicos.",ok:false,why:"Falsa: metais são bons CONDUTORES de calor."},
+ {v:16,t:"O calor do Sol chega à Terra por irradiação.",ok:true,why:"Verdadeira: atravessa o vácuo do espaço."}
+]},
+{type:"som",q:"Sobre as <b>ondas e o som</b>, é correto o que se afirma em:",itens:[
+ {v:1,t:"Uma onda transporta energia, mas não transporta matéria.",ok:true,why:"Verdadeira: a matéria só vibra no lugar."},
+ {v:2,t:"O som é uma onda mecânica e longitudinal.",ok:true,why:"Verdadeira: vibra na mesma direção em que se propaga."},
+ {v:4,t:"O som se propaga normalmente no vácuo.",ok:false,why:"Falsa: por ser mecânica, o som NÃO se propaga no vácuo."},
+ {v:8,t:"A altura do som (agudo/grave) está ligada à frequência.",ok:true,why:"Verdadeira: frequência alta = agudo."},
+ {v:16,t:"O timbre permite identificar a fonte sonora.",ok:true,why:"Verdadeira: distingue o piano do violino."}
+]},
+/* ---- 5 NÚMEROS ROMANOS ---- */
+{type:"rom",q:"Analise as afirmativas sobre <b>temperatura e calor</b>:",afirm:[
+ {t:"Temperatura é o grau de agitação das partículas de um corpo.",v:true},
+ {t:"O calor flui espontaneamente do corpo mais quente para o mais frio.",v:true},
+ {t:"No equilíbrio térmico, um corpo continua cedendo calor ao outro.",v:false},
+ {t:"A escala Kelvin é uma escala absoluta.",v:true}
+],ops:[
+ {t:"Apenas I, II e IV estão corretas.",ok:true},
+ {t:"Apenas I e III estão corretas.",ok:false},
+ {t:"Apenas II e IV estão corretas.",ok:false},
+ {t:"Apenas III e IV estão corretas.",ok:false},
+ {t:"I, II, III e IV estão corretas.",ok:false}
+],why:"III é falsa: no equilíbrio térmico os corpos ficam na mesma temperatura e a troca de calor cessa."},
+{type:"rom",q:"Analise as afirmativas sobre <b>dilatação térmica</b>:",afirm:[
+ {t:"Os gases dilatam mais que os líquidos e os sólidos.",v:true},
+ {t:"A dilatação linear envolve principalmente o comprimento.",v:true},
+ {t:"O coeficiente de dilatação é igual para todos os materiais.",v:false},
+ {t:"A água tem comportamento anômalo entre 0 °C e 4 °C.",v:true}
+],ops:[
+ {t:"Apenas I, II e IV estão corretas.",ok:true},
+ {t:"Apenas I e III estão corretas.",ok:false},
+ {t:"Apenas II e III estão corretas.",ok:false},
+ {t:"Apenas II e IV estão corretas.",ok:false},
+ {t:"I, II, III e IV estão corretas.",ok:false}
+],why:"III é falsa: o coeficiente de dilatação varia conforme o material."},
+{type:"rom",q:"Analise as afirmativas sobre <b>calorimetria</b>:",afirm:[
+ {t:"Calor sensível muda a temperatura e é calculado por Q = m·c·Δθ.",v:true},
+ {t:"Calor latente muda o estado físico e é calculado por Q = m·L.",v:true},
+ {t:"O calor específico da água é 1 cal/(g·°C).",v:true},
+ {t:"Durante a mudança de estado a temperatura sempre sobe.",v:false}
+],ops:[
+ {t:"Apenas I, II e III estão corretas.",ok:true},
+ {t:"Apenas I e IV estão corretas.",ok:false},
+ {t:"Apenas II e III estão corretas.",ok:false},
+ {t:"Apenas III e IV estão corretas.",ok:false},
+ {t:"I, II, III e IV estão corretas.",ok:false}
+],why:"IV é falsa: durante a mudança de estado a temperatura fica CONSTANTE."},
+{type:"rom",q:"Analise as afirmativas sobre a <b>propagação do calor</b>:",afirm:[
+ {t:"Na condução, o calor passa de partícula a partícula.",v:true},
+ {t:"A convecção acontece dentro de sólidos rígidos.",v:false},
+ {t:"A irradiação pode ocorrer no vácuo.",v:true},
+ {t:"Madeira e borracha são bons isolantes térmicos.",v:true}
+],ops:[
+ {t:"Apenas I, III e IV estão corretas.",ok:true},
+ {t:"Apenas I e II estão corretas.",ok:false},
+ {t:"Apenas II e IV estão corretas.",ok:false},
+ {t:"Apenas I e III estão corretas.",ok:false},
+ {t:"I, II, III e IV estão corretas.",ok:false}
+],why:"II é falsa: a convecção ocorre em fluidos (líquidos e gases), não em sólidos."},
+{type:"rom",q:"Analise as afirmativas sobre <b>ondas e som</b>:",afirm:[
+ {t:"A faixa audível humana vai de 20 Hz a 20 000 Hz.",v:true},
+ {t:"Sons abaixo de 20 Hz são chamados de ultrassons.",v:false},
+ {t:"O som se propaga mais rápido nos sólidos do que no ar.",v:true},
+ {t:"Período e frequência são inversos: T = 1/f.",v:true}
+],ops:[
+ {t:"Apenas I, III e IV estão corretas.",ok:true},
+ {t:"Apenas I e II estão corretas.",ok:false},
+ {t:"Apenas II e IV estão corretas.",ok:false},
+ {t:"Apenas I e III estão corretas.",ok:false},
+ {t:"I, II, III e IV estão corretas.",ok:false}
+],why:"II é falsa: sons abaixo de 20 Hz são INFRASSONS; ultrassom é acima de 20 kHz."},
+/* ---- 15 MÚLTIPLA ESCOLHA ---- */
+{type:"mc",q:"Uma temperatura de <b>20 °C</b> corresponde, na escala Kelvin, a:",ops:[
+ {t:"293 K",ok:true,why:"Certo: θK = θC + 273 = 20 + 273 = 293 K."},
+ {t:"253 K",ok:false,why:"Isso seria 20 − 273; a conta é somar 273."},
+ {t:"20 K",ok:false,why:"Kelvin não é igual a Celsius; soma-se 273."},
+ {t:"313 K",ok:false,why:"313 seria 40 °C; aqui são 20 °C."}
+]},
+{type:"mc",q:"Uma temperatura de <b>37 °C</b> corresponde, em Fahrenheit, a:",ops:[
+ {t:"98,6 °F",ok:true,why:"Certo: θF = 32 + 9·37/5 = 32 + 66,6 = 98,6 °F."},
+ {t:"66,6 °F",ok:false,why:"66,6 é só a parcela 9·37/5; falta somar 32."},
+ {t:"310 °F",ok:false,why:"310 seria o valor em Kelvin (37 + 273)."},
+ {t:"69 °F",ok:false,why:"Não corresponde à conversão correta."}
+]},
+{type:"mc",q:"Uma temperatura de <b>300 K</b> corresponde, em Celsius, a:",ops:[
+ {t:"27 °C",ok:true,why:"Certo: θC = θK − 273 = 300 − 273 = 27 °C."},
+ {t:"573 °C",ok:false,why:"573 seria 300 + 273; para ir de K para C subtrai-se."},
+ {t:"300 °C",ok:false,why:"Kelvin e Celsius não são iguais."},
+ {t:"−27 °C",ok:false,why:"O sinal está trocado; o resultado é positivo."}
+]},
+{type:"mc",q:"Quanto calor é preciso para aquecer <b>100 g de água</b> [c = 1 cal/(g·°C)] de 25 °C até 75 °C?",ops:[
+ {t:"5000 cal",ok:true,why:"Certo: Q = m·c·Δθ = 100·1·50 = 5000 cal (Δθ = 75 − 25 = 50)."},
+ {t:"7500 cal",ok:false,why:"Usou 75 em vez de Δθ = 50."},
+ {t:"2500 cal",ok:false,why:"Metade do valor; Δθ é 50, não 25."},
+ {t:"100 cal",ok:false,why:"Faltou multiplicar pela variação de temperatura."}
+]},
+{type:"mc",q:"Quanto calor aquece <b>50 g</b> de uma substância de c = 0,2 cal/(g·°C) de 10 °C até 30 °C?",ops:[
+ {t:"200 cal",ok:true,why:"Certo: Q = 50·0,2·20 = 200 cal (Δθ = 30 − 10 = 20)."},
+ {t:"300 cal",ok:false,why:"Usou Δθ = 30; a variação é 20."},
+ {t:"2000 cal",ok:false,why:"Esqueceu que c = 0,2 (não 2)."},
+ {t:"100 cal",ok:false,why:"Metade do valor; confira Δθ = 20."}
+]},
+{type:"mc",q:"Quanto calor é preciso para <b>derreter 50 g de gelo</b> que já está a 0 °C? (L de fusão = 80 cal/g)",ops:[
+ {t:"4000 cal",ok:true,why:"Certo: Q = m·L = 50·80 = 4000 cal."},
+ {t:"2700 cal",ok:false,why:"Não corresponde a m·L com L = 80."},
+ {t:"630 cal",ok:false,why:"Não corresponde ao cálculo."},
+ {t:"500 cal",ok:false,why:"Faltou usar o L = 80 cal/g."}
+]},
+{type:"mc",q:"Quanto calor é preciso para <b>vaporizar 10 g de água</b> já a 100 °C? (L de vaporização = 540 cal/g)",ops:[
+ {t:"5400 cal",ok:true,why:"Certo: Q = m·L = 10·540 = 5400 cal."},
+ {t:"800 cal",ok:false,why:"Esse seria o L de fusão (80), não o de vaporização."},
+ {t:"540 cal",ok:false,why:"Faltou multiplicar pela massa de 10 g."},
+ {t:"54 cal",ok:false,why:"Erro na conta: 10·540 = 5400."}
+]},
+{type:"mc",q:"O calor do Sol chega até a Terra atravessando o vácuo do espaço. Essa forma de propagação é a:",ops:[
+ {t:"irradiação",ok:true,why:"Certo: só a irradiação dispensa meio material (viaja no vácuo)."},
+ {t:"condução",ok:false,why:"A condução precisa de meio material."},
+ {t:"convecção",ok:false,why:"A convecção precisa de um fluido como meio."},
+ {t:"equilíbrio térmico",ok:false,why:"Não é uma forma de propagação, e sim um estado final."}
+]},
+{type:"mc",q:"Uma colher de metal esquenta ao ficar dentro de uma sopa quente. A forma de propagação é a:",ops:[
+ {t:"condução",ok:true,why:"Certo: o calor passa de partícula a partícula pelo metal (bom condutor)."},
+ {t:"convecção",ok:false,why:"Convecção é por correntes em fluidos, não no metal sólido."},
+ {t:"irradiação",ok:false,why:"Aqui há contato direto; não são ondas no vácuo."},
+ {t:"dilatação",ok:false,why:"Dilatação é mudança de tamanho, não propagação de calor."}
+]},
+{type:"mc",q:"Uma boia sobe e desce <b>30 vezes em 10 segundos</b>. A frequência desse movimento é:",ops:[
+ {t:"3 Hz",ok:true,why:"Certo: f = nº de oscilações ÷ tempo = 30 ÷ 10 = 3 Hz."},
+ {t:"0,33 Hz",ok:false,why:"Isso é o período (10 ÷ 30), não a frequência."},
+ {t:"300 Hz",ok:false,why:"Multiplicou em vez de dividir."},
+ {t:"10 Hz",ok:false,why:"10 é o tempo em segundos, não a frequência."}
+]},
+{type:"mc",q:"Uma onda tem frequência de <b>4 Hz</b>. Qual é o seu período?",ops:[
+ {t:"0,25 s",ok:true,why:"Certo: T = 1/f = 1/4 = 0,25 s."},
+ {t:"4 s",ok:false,why:"4 é a frequência; o período é o inverso dela."},
+ {t:"0,4 s",ok:false,why:"Não é 1/4; confira a divisão."},
+ {t:"2,5 s",ok:false,why:"Não corresponde a 1/4."}
+]},
+{type:"mc",q:"Uma onda tem comprimento de onda <b>λ = 2 m</b> e frequência <b>f = 50 Hz</b>. Sua velocidade é:",ops:[
+ {t:"100 m/s",ok:true,why:"Certo: v = λ·f = 2·50 = 100 m/s."},
+ {t:"25 m/s",ok:false,why:"Isso seria f ÷ λ; a fórmula é λ·f."},
+ {t:"52 m/s",ok:false,why:"Somou em vez de multiplicar."},
+ {t:"0,04 m/s",ok:false,why:"Dividiu λ por f; o certo é multiplicar."}
+]},
+{type:"mc",q:"Um som anda a <b>340 m/s</b> com frequência de <b>170 Hz</b>. Seu comprimento de onda (λ) é:",ops:[
+ {t:"2 m",ok:true,why:"Certo: de v = λ·f tiramos λ = v/f = 340/170 = 2 m."},
+ {t:"0,5 m",ok:false,why:"Isso seria f/v; o certo é v/f."},
+ {t:"510 m",ok:false,why:"Somou v e f em vez de dividir."},
+ {t:"170 m",ok:false,why:"170 é a frequência, não o comprimento de onda."}
+]},
+{type:"mc",q:"Um som <b>agudo</b> (fino) está diretamente relacionado a:",ops:[
+ {t:"uma frequência alta (é a altura do som)",ok:true,why:"Certo: altura depende da frequência; agudo = frequência alta."},
+ {t:"uma amplitude grande (é a intensidade)",ok:false,why:"Amplitude liga-se à intensidade (forte/fraco), não a agudo/grave."},
+ {t:"o timbre do instrumento",ok:false,why:"O timbre identifica a fonte, não define agudo/grave."},
+ {t:"um número alto de decibéis",ok:false,why:"Decibel mede intensidade (volume), não a altura."}
+]},
+{type:"mc",q:"O que permite distinguir a mesma nota «lá» tocada num piano e num violino é:",ops:[
+ {t:"o timbre",ok:true,why:"Certo: o timbre depende da forma da onda e identifica a fonte sonora."},
+ {t:"a altura",ok:false,why:"A altura é igual: é a mesma nota, logo mesma frequência."},
+ {t:"a intensidade",ok:false,why:"Intensidade só diria qual está mais forte, não qual instrumento."},
+ {t:"o eco",ok:false,why:"Eco é a reflexão do som, não uma qualidade que identifica a fonte."}
+]}
+];
+
+/* ================ utilidades ================ */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+function shuffle(arr,rng){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const LET="ABCDEFGHJKLMNPQRSTUVWXYZ";
+const ALPHA=["A","B","C","D","E"];
+const ROMAN=["I","II","III","IV"];
+
+const KEY="fisica9_simulado";let mem={};
+function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null;}catch(e){return mem[KEY]||null;}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(STATE));}catch(e){mem[KEY]=STATE;}stamp();}
+let STATE=load()||{resp:{},enviado:false,acertos:null,codigo:null,liberado:false,ts:null,ordem:null};
+
+/* ordem das alternativas (mc e rom): correta num slot rotativo + resto embaralhado (semente fixa) */
+function montarOrdem(q,qi){
+  const n=q.ops.length, target=qi%n;
+  const correct=q.ops.findIndex(o=>o.ok);
+  const rng=mulberry32(5000+qi*97);
+  const others=shuffle(q.ops.map((_,i)=>i).filter(i=>i!==correct),rng);
+  const order=[]; let oi=0;
+  for(let pos=0;pos<n;pos++){ order.push(pos===target?correct:others[oi++]); }
+  return order;
+}
+if(!STATE.ordem){
+  STATE.ordem=QS.map((q,qi)=>{ if(q.type==='mc'||q.type==='rom')return montarOrdem(q,qi); return null; });
+}
+function stamp(){STATE.ts=new Date().toISOString();const d=new Date(STATE.ts);document.getElementById('saveinfo').textContent="Salvo às "+d.toLocaleTimeString('pt-BR')+".";}
+
+/* soma correta de cada somatório */
+function somaCorreta(q){return q.itens.reduce((s,it)=>s+(it.ok?it.v:0),0);}
+
+/* ================ render ================ */
+const cont=document.getElementById('sim');
+QS.forEach((q,qi)=>{
+  const div=document.createElement('div');div.className='q';div.id='q'+qi;
+  let tlab = q.type==='mc'?'<span class="tipo mc">MÚLTIPLA ESCOLHA</span>':q.type==='som'?'<span class="tipo som">SOMATÓRIO</span>':'<span class="tipo rom">NÚMEROS ROMANOS</span>';
+  let inner=`<div class="num">Questão ${qi+1}</div>${tlab}<div class="txt">${q.q}</div>`;
+  if(q.type==='mc'){
+    STATE.ordem[qi].forEach((orig,pos)=>{
+      inner+=`<label class="op" id="op${qi}_${pos}" onclick="pick(${qi},${pos})"><span class="l">${ALPHA[pos]})</span>${q.ops[orig].t}<div class="why">${q.ops[orig].why}</div></label>`;
+    });
+  } else if(q.type==='rom'){
+    q.afirm.forEach((a,ai)=>{ inner+=`<div class="afirm" id="af${qi}_${ai}"><b style="color:var(--amarelo)">${ROMAN[ai]}.</b> ${a.t}<span class="vf"></span></div>`; });
+    inner+=`<div style="margin-top:8px"></div>`;
+    STATE.ordem[qi].forEach((orig,pos)=>{
+      inner+=`<label class="op" id="op${qi}_${pos}" onclick="pick(${qi},${pos})"><span class="l">${ALPHA[pos]})</span>${q.ops[orig].t}<div class="why">${q.ops[orig].why||''}</div></label>`;
+    });
+    inner+=`<div class="why" id="romwhy${qi}" style="margin-top:8px;color:#ffd98a">${q.why}</div>`;
+  } else { /* som */
+    q.itens.forEach((it,ii)=>{ inner+=`<div class="somitem" id="si${qi}_${ii}"><span class="val">${String(it.v).padStart(2,'0')}</span><span>${it.t}<span class="vf"></span><div class="why" style="margin-top:2px">${it.why}</div></span></div>`; });
+    inner+=`<div class="sominput">Soma das corretas: <input type="number" id="som${qi}" min="0" max="31" placeholder="0" oninput="pickSom(${qi})"></div>`;
+  }
+  div.innerHTML=inner; cont.appendChild(div);
+});
+
+function pick(qi,pos){ if(STATE.enviado)return; STATE.resp[qi]=pos;
+  document.querySelectorAll('#q'+qi+' .op').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('op'+qi+'_'+pos).classList.add('sel'); persist(); atualizar(); }
+function pickSom(qi){ if(STATE.enviado)return; const v=document.getElementById('som'+qi).value;
+  STATE.resp[qi]= v===''?undefined:parseInt(v,10); if(STATE.resp[qi]===undefined) delete STATE.resp[qi]; persist(); atualizar(); }
+
+function answered(){let n=0;QS.forEach((q,qi)=>{if(STATE.resp[qi]!==undefined)n++;});return n;}
+function atualizar(){const n=answered();document.getElementById('prog').textContent=n+" de "+QS.length+" respondidas.";
+  document.getElementById('enviar').disabled=n<QS.length||STATE.enviado;}
+
+function enviar(){
+  if(answered()<QS.length)return;
+  let ac=0;
+  QS.forEach((q,qi)=>{
+    const r=STATE.resp[qi];
+    if(q.type==='som'){ if(r===somaCorreta(q))ac++; }
+    else { const orig=STATE.ordem[qi][r]; if(q.ops[orig].ok)ac++; }
+  });
+  STATE.enviado=true;STATE.acertos=ac;
+  const rng=mulberry32(Date.now()%100000);
+  const yy=LET[Math.floor(rng()*LET.length)]+LET[Math.floor(rng()*LET.length)];
+  STATE.codigo="SIM-"+String(ac).padStart(2,'0')+"-"+yy;
+  persist(); mostrarEnviado();
+}
+function mostrarEnviado(){
+  document.getElementById('enviar').style.display='none';
+  document.getElementById('codebox').style.display='block';
+  document.getElementById('acertos').textContent=STATE.acertos;
+  document.getElementById('codigo').textContent=STATE.codigo;
+  document.querySelectorAll('.q').forEach(el=>el.classList.add('locked'));
+  if(STATE.liberado) verGabarito(true);
+}
+function verGabarito(auto){
+  if(!auto){const v=document.getElementById('codein').value.trim().toUpperCase();
+    if(v!==STATE.codigo){document.getElementById('codemsg').textContent="Código incorreto. Confira as letras (sem I e sem O).";return;}
+    STATE.liberado=true;persist();}
+  document.getElementById('codemsg').textContent="Gabarito liberado ✓";
+  QS.forEach((q,qi)=>{
+    if(q.type==='mc'||q.type==='rom'){
+      const chosen=STATE.resp[qi];
+      STATE.ordem[qi].forEach((orig,pos)=>{const el=document.getElementById('op'+qi+'_'+pos);
+        if(q.ops[orig].ok)el.classList.add('correct');else if(pos===chosen)el.classList.add('wrong');});
+      if(q.type==='rom'){ q.afirm.forEach((a,ai)=>{const el=document.getElementById('af'+qi+'_'+ai);el.classList.add('rev');
+          el.querySelector('.vf').textContent=a.v?" ✔ verdadeira":" ✘ falsa";el.querySelector('.vf').style.color=a.v?"var(--ok)":"var(--alerta)";});
+        document.getElementById('romwhy'+qi).style.display='block'; }
+    } else {
+      const correct=somaCorreta(q);
+      q.itens.forEach((it,ii)=>{const el=document.getElementById('si'+qi+'_'+ii);el.classList.add('rev');
+        el.querySelector('.vf').textContent=it.ok?" ✔ correta":" ✘ incorreta";el.querySelector('.vf').style.color=it.ok?"var(--ok)":"var(--alerta)";
+        el.querySelector('.why').style.display='block';
+        el.style.borderColor=it.ok?"var(--ok-d)":"var(--line)";});
+      const chosen=STATE.resp[qi];const box=document.getElementById('som'+qi);
+      box.style.borderColor=(chosen===correct)?"var(--ok)":"var(--alerta)";
+      const msg=document.createElement('div');msg.className="saveinfo";msg.style.marginTop="6px";
+      msg.innerHTML=(chosen===correct?"✔ ":"✘ sua soma: "+chosen+" · ")+"<b>Soma correta: "+correct+"</b>";
+      box.parentNode.appendChild(msg);
+    }
+  });
+}
+
+/* export/import/reset */
+function doExport(){const blob=new Blob([JSON.stringify(STATE,null,2)],{type:"application/json"});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="pulso_simulado.json";a.click();URL.revokeObjectURL(a.href);}
+function doImport(ev){const f=ev.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{STATE=JSON.parse(rd.result);persist();location.reload();}catch(e){openModal("Arquivo inválido","Não consegui ler esse arquivo.",null);}};rd.readAsText(f);}
+let modalCb=null;
+function openModal(t,x,cb){document.getElementById('mtit').textContent=t;document.getElementById('mtxt').textContent=x;modalCb=cb;document.getElementById('mok').style.display=cb?'inline-block':'none';document.getElementById('modalbg').style.display='flex';}
+function closeModal(){document.getElementById('modalbg').style.display='none';modalCb=null;}
+document.getElementById('mok').onclick=()=>{if(modalCb)modalCb();closeModal();};
+function askReset(){openModal("Zerar o simulado?","Isto apaga suas respostas e o código. Recomeçar?",()=>{try{localStorage.removeItem(KEY);}catch(e){}mem={};location.reload();});}
+
+/* restaurar */
+QS.forEach((q,qi)=>{const r=STATE.resp[qi];if(r===undefined)return;
+  if(q.type==='som'){const b=document.getElementById('som'+qi);if(b)b.value=r;}
+  else{const el=document.getElementById('op'+qi+'_'+r);if(el)el.classList.add('sel');}});
+if(STATE.ts){const d=new Date(STATE.ts);document.getElementById('saveinfo').textContent="Salvo às "+d.toLocaleTimeString('pt-BR')+".";}
+atualizar(); if(STATE.enviado) mostrarEnviado(); persist();
+</script>
+</body>
+</html>

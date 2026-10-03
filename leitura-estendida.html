@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leitura Estendida · Pulso da Matéria</title>
+<style>
+:root{
+  --fumaca:#0d1017; --carvao:#171b28; --carvao2:#1d2332; --borda:#2d3650;
+  --brasa:#38d9e0; --brasa2:#7fe9ef; --melaco:#ff7a3d;
+  --cana:#5ad16f; --tijolo:#f8716b; --alerta:#ffd23f;
+  --areia:#e7ecf7; --areia2:#9aa6c4;
+  --serif:Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--fumaca);color:var(--areia);font-family:var(--sans);line-height:1.65;font-size:17px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 80px}
+header.top{background:linear-gradient(160deg,#2a1406,#121019 72%);border-bottom:5px solid var(--melaco);padding:26px 0 20px}
+header.top .wrap{padding-bottom:0}
+.kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--melaco);font-weight:700}
+h1{font-family:var(--serif);font-size:30px;line-height:1.15;margin:8px 0 6px}
+.sub{color:var(--areia2);font-size:15px;margin:0}
+.navbar{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
+.navbar a{display:inline-block;padding:7px 13px;border-radius:999px;border:1px solid var(--borda);
+  background:var(--carvao);color:var(--areia2);text-decoration:none;font-size:13px;font-weight:600}
+.navbar a.on{background:var(--melaco);color:#2a1002;border-color:var(--melaco)}
+.painel{background:var(--carvao);border:1px solid var(--borda);border-radius:14px;padding:14px;margin:20px 0;
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.painel .saved{font-size:13px;color:var(--areia2)}
+.btn{cursor:pointer;border-radius:10px;border:1px solid var(--borda);background:var(--carvao2);color:var(--areia);
+  padding:9px 14px;font-size:14px;font-weight:600;font-family:inherit}
+.btn:hover{border-color:var(--brasa)}
+.btn.primary{background:var(--melaco);color:#2a1002;border-color:var(--melaco)}
+.btn.primary:disabled{background:#3d4a4c;color:#8d9b99;border-color:#3d4a4c;cursor:not-allowed}
+.btn.ghost{background:transparent}
+.progresso{height:9px;background:#22283a;border-radius:999px;overflow:hidden;margin:14px 0 0}
+.progresso i{display:block;height:100%;background:linear-gradient(90deg,var(--melaco),var(--amarelo,#ffd23f));width:0%;transition:width .4s}
+.bloco{background:var(--carvao);border:1px solid var(--borda);border-radius:16px;margin:18px 0;overflow:hidden}
+.bloco.trancado{opacity:.55}
+.bloco > .cab{padding:16px 18px;border-left:5px solid var(--melaco);background:var(--carvao2)}
+.bloco .etapa{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--melaco);font-weight:700}
+.bloco h2{font-family:var(--serif);font-size:21px;margin:6px 0 2px}
+.bloco .pag{font-size:12px;color:var(--areia2)}
+.bloco .corpo{padding:4px 18px 18px}
+.bloco p.tx{margin:14px 0}
+.bloco p.tx b{color:var(--brasa2)}
+.formula{display:block;background:#0a1420;border:1px solid var(--brasa);border-radius:10px;padding:10px 14px;
+  margin:12px 0;font-size:17px;color:var(--brasa2);text-align:center;font-weight:700;letter-spacing:.3px}
+.cadeado{padding:18px;color:var(--areia2);font-size:14px}
+.badge{float:right;font-size:12px;padding:3px 10px;border-radius:999px;font-weight:700}
+.badge.ok{background:rgba(90,209,111,.18);color:var(--cana);border:1px solid var(--cana)}
+.badge.rev{background:rgba(255,210,63,.15);color:var(--alerta);border:1px solid var(--alerta)}
+.perg{border-top:1px dashed var(--borda);padding:16px 0 4px;margin-top:10px}
+.perg.vermelha{border-left:4px solid var(--tijolo);padding-left:12px;background:rgba(248,113,107,.07);border-radius:0 10px 10px 0}
+.perg .num{font-size:12px;color:var(--melaco);font-weight:700;letter-spacing:.1em}
+.perg .enun{margin:6px 0 10px;font-weight:600}
+textarea{width:100%;min-height:92px;background:#0f1420;color:var(--areia);border:1px solid var(--borda);
+  border-radius:10px;padding:11px;font-family:inherit;font-size:16px;line-height:1.55;resize:vertical}
+textarea:focus{outline:none;border-color:var(--brasa)}
+.aviso{margin-top:9px;border-radius:10px;padding:11px 13px;font-size:14px;display:none}
+.aviso.amarelo{display:block;background:rgba(255,210,63,.12);border:1px solid var(--alerta);color:#f6e6ad}
+.aviso.vermelho{display:block;background:rgba(248,113,107,.12);border:1px solid var(--tijolo);color:#f6bdb7}
+.modelo{display:none;margin-top:11px;background:rgba(90,209,111,.08);border:1px solid rgba(90,209,111,.45);
+  border-radius:10px;padding:12px 14px;font-size:15px}
+.modelo.ver{display:block}
+.modelo .rot{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cana);font-weight:700;margin-bottom:5px}
+.chk{margin-top:11px;background:#121725;border:1px solid var(--borda);border-radius:10px;padding:12px 14px;display:none}
+.chk.ver{display:block}
+.chk .rot{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--melaco);font-weight:700;margin-bottom:8px}
+.chk .item{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:7px 0;border-top:1px solid #232a3c}
+.chk .item:first-of-type{border-top:none}
+.chk .item span{flex:1;font-size:14.5px}
+.chk .item .opts{display:flex;gap:6px;flex:0 0 auto}
+.mini{cursor:pointer;border:1px solid var(--borda);background:var(--carvao2);color:var(--areia2);
+  border-radius:8px;padding:5px 11px;font-size:13px;font-weight:700;font-family:inherit}
+.mini.sim.on{background:var(--cana);color:#0f1f0e;border-color:var(--cana)}
+.mini.nao.on{background:var(--tijolo);color:#2a0d0a;border-color:var(--tijolo)}
+.acoes{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.dica{font-size:13px;color:var(--areia2)}
+.caixa{background:var(--carvao);border:1px solid var(--borda);border-radius:16px;padding:18px;margin:22px 0}
+.caixa h3{font-family:var(--serif);margin:0 0 10px;font-size:20px;color:var(--brasa2)}
+.pega{counter-reset:p;list-style:none;padding:0;margin:0}
+.pega li{counter-increment:p;position:relative;padding:10px 0 10px 40px;border-top:1px solid #232a3c;font-size:15px}
+.pega li:first-child{border-top:none}
+.pega li::before{content:counter(p);position:absolute;left:0;top:10px;width:26px;height:26px;border-radius:50%;
+  background:var(--alerta);color:#231a05;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+table.cob{width:100%;border-collapse:collapse;font-size:14px}
+table.cob th,table.cob td{text-align:left;padding:8px 6px;border-bottom:1px solid #232a3c;vertical-align:top}
+table.cob th{color:var(--melaco);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.revisar li{padding:8px 0;border-top:1px solid #232a3c;font-size:14.5px}
+.revisar{list-style:none;padding:0;margin:0}
+.rodape{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-top:26px;
+  padding-top:18px;border-top:1px solid var(--borda);font-size:14px;color:var(--areia2)}
+.rodape a{color:var(--brasa);text-decoration:none;font-weight:700}
+.modal{position:fixed;inset:0;background:rgba(6,8,12,.84);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal.ver{display:flex}
+.modal .cx{background:var(--carvao);border:1px solid var(--borda);border-radius:16px;max-width:520px;width:100%;padding:20px}
+.modal h3{font-family:var(--serif);margin:0 0 8px;font-size:20px}
+.modal p{font-size:15px;color:var(--areia2)}
+.modal textarea{min-height:120px;font-size:13px}
+.modal .fim{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+@media(max-width:560px){h1{font-size:24px}body{font-size:16px}.bloco .corpo{padding:4px 14px 16px}.bloco>.cab{padding:14px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="kicker">Pulso da Matéria · Física · 9º ano</div>
+  <h1>📖 Leitura Estendida</h1>
+  <p class="sub">Cap. 9 Termometria · Cap. 10 Calorimetria · Cap. 11 O estudo do som</p>
+  <ul class="navbar">
+    <li><a class="on" href="leitura-estendida.html">1 · 📖 Leitura Estendida</a></li>
+    <li><a href="resumo.html">2 · 🗺️ Resumo</a></li>
+    <li><a href="simulado.html">3 · 📝 Simulado</a></li>
+    <li><a href="index.html">🏠 Início</a></li>
+  </ul>
+  <div class="progresso"><i id="barra"></i></div>
+</div></header>
+
+<div class="wrap">
+  <div class="painel">
+    <div class="saved" id="saved">Nada salvo ainda.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost" id="bExp">📥 Exportar</button>
+      <button class="btn ghost" id="bImp">📤 Importar</button>
+      <button class="btn ghost" id="bZero">🗑️ Zerar tudo</button>
+    </div>
+  </div>
+
+  <div class="caixa" style="border-left:5px solid var(--melaco)">
+    <h3>Como funciona</h3>
+    <p style="margin:0;font-size:15px">Leia o bloco e responda as <b>3 perguntas escrevendo com as suas palavras</b> (em Física, muitas perguntas pedem para <b>resolver uma conta nova</b> ou <b>dar um exemplo do dia a dia</b>). O botão <b>Conferir</b> só libera quando as três estiverem preenchidas. Depois de conferir aparecem a resposta modelo e uma pequena autoavaliação, e o próximo bloco se abre. Resposta copiada do texto é avisada: reescreva com as suas palavras — nas contas, mostre o cálculo. Sem relógio: estude no seu ritmo.</p>
+  </div>
+
+  <div id="blocos"></div>
+
+  <div class="caixa" id="boxRevisar" style="display:none;border-left:5px solid var(--tijolo)">
+    <h3>🔁 Para revisar antes da prova</h3>
+    <ul class="revisar" id="listaRevisar"></ul>
+  </div>
+
+  <div class="caixa">
+    <h3>⚠️ As 10 pegadinhas desta prova</h3>
+    <ol class="pega" id="pegadinhas"></ol>
+  </div>
+
+  <div class="caixa">
+    <h3>🧭 Tópico → Bloco (cobertura dos três capítulos)</h3>
+    <table class="cob"><thead><tr><th>Tópico do livro</th><th>Onde está</th><th>Capítulo</th></tr></thead>
+    <tbody id="cobertura"></tbody></table>
+  </div>
+
+  <div class="rodape">
+    <span>Terminou a leitura? O próximo material é o Resumo.</span>
+    <a href="resumo.html">Ir para o 🗺️ Resumo →</a>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="cx">
+  <h3 id="mTit"></h3>
+  <p id="mTxt"></p>
+  <textarea id="mArea" style="display:none"></textarea>
+  <div class="fim" id="mFim"></div>
+</div></div>
+
+<script>
+/* Dados da Leitura Estendida — Fisica 9o ano, cap. 9, 10 e 11 (Callis Fisica 9 - Livro 2). */
+const BLOCOS = [
+{
+  id:"b1", num:1, etapa:"Termômetro · medir o calor",
+  titulo:"Temperatura, calor e sensação térmica",
+  paginas:"Cap. 9",
+  texto:[
+    "A parte da Física que estuda a temperatura e o calor chama-se <b>Termologia</b>. Ela se divide em duas frentes: a <b>Termometria</b>, que estuda a temperatura, e a <b>Calorimetria</b>, que estuda a transferência de calor.",
+    "<b>Temperatura</b> é o grau de agitação das partículas de um corpo, ou seja, mede a energia cinética (de movimento) dessas partículas. Quanto mais agitadas elas estão, maior é a temperatura; quanto mais paradas, menor.",
+    "<b>Calor</b> é energia térmica <b>em trânsito</b> entre dois corpos que estão a temperaturas diferentes. O calor flui espontaneamente do corpo mais quente para o mais frio, e esse fluxo continua até os dois ficarem com a mesma temperatura — o chamado <b>equilíbrio térmico</b>. Repare: calor não é algo que o corpo «tem guardado»; é energia que está passando de um corpo para outro.",
+    "A <b>sensação térmica</b> é a percepção de quente ou frio que o nosso corpo tem, e ela é <b>imprecisa</b>: depende da temperatura do próprio corpo, da umidade, do material tocado e de outros fatores. Um experimento clássico mostra isso: se você põe uma mão na água quente e a outra na água fria e depois mergulha as duas numa água morna, a mesma água morna parece fria para uma mão e quente para a outra."
+  ],
+  perguntas:[
+    { tipo:"conceitual",
+      enunciado:"Explique, com as suas palavras, a diferença entre temperatura e calor.",
+      modelo:"Temperatura é o grau de agitação das partículas de um corpo: mede o quanto elas se movem. Calor é energia térmica em trânsito, que passa de um corpo mais quente para um mais frio. Ou seja, temperatura é uma medida do estado do corpo e calor é energia em movimento entre corpos.",
+      chk:["Minha resposta disse que temperatura é o grau de agitação das partículas?","Minha resposta disse que calor é energia em trânsito entre corpos de temperaturas diferentes?"] },
+    { tipo:"aplicacao",
+      enunciado:"Você segura um cubo de gelo na mão e sente frio. Explique, usando a ideia de calor como energia em trânsito e de equilíbrio térmico, o que está realmente acontecendo com a sua mão.",
+      modelo:"A minha mão está mais quente que o gelo, então o calor flui espontaneamente da mão (mais quente) para o gelo (mais frio). Essa perda de energia térmica da minha pele é o que eu sinto como frio. O calor vai passar até os dois tenderem ao equilíbrio térmico — por isso o gelo derrete e a mão esfria.",
+      chk:["Disse que o calor sai da mão (mais quente) para o gelo (mais frio)?","Liguei a sensação de frio à mão perdendo energia térmica?","Usei a ideia de equilíbrio térmico ou de fluxo espontâneo?"] },
+    { tipo:"aplicacao",
+      enunciado:"Um colega afirma: «dá para confiar no tato para saber a temperatura exata das coisas». Usando o experimento das duas mãos, escreva por que ele está errado.",
+      modelo:"Ele está errado porque a sensação térmica é imprecisa. No experimento das duas mãos, uma fica na água quente e a outra na fria; depois as duas vão para a mesma água morna, e essa água parece fria para uma mão e quente para a outra. Se o tato dependesse só da temperatura da água, as duas sentiriam a mesma coisa. Por isso, para medir temperatura, usamos o termômetro, não a mão.",
+      chk:["Expliquei que a sensação térmica é imprecisa?","Usei o experimento das duas mãos (a mesma água morna parece diferente)?","Concluí que o certo é medir com termômetro?"] }
+  ]
+},
+{
+  id:"b2", num:2, etapa:"Termômetro · medir o calor",
+  titulo:"Escalas termométricas e conversão",
+  paginas:"Cap. 9",
+  texto:[
+    "Um termômetro mede a temperatura, geralmente pela dilatação de um líquido dentro dele. Para registrar essa medida existem três escalas principais.",
+    "A escala <b>Celsius (°C)</b> é a mais usada no Brasil: nela a água funde (derrete) a 0 °C e ferve a 100 °C. A escala <b>Fahrenheit (°F)</b>, usada nos Estados Unidos, marca a fusão da água em 32 °F e a ebulição em 212 °F. A escala <b>Kelvin (K)</b> é a <b>escala absoluta</b>: seu zero (0 K) é o <b>zero absoluto</b>, a menor temperatura possível, igual a −273 °C. Na Kelvin, a água funde a 273 K e ferve a 373 K.",
+    "Para converter entre as três escalas, o livro usa a relação:",
+    "<span class='formula'>&theta;C / 5 = (&theta;F &minus; 32) / 9 = (&theta;K &minus; 273) / 5</span>",
+    "Como Celsius e Kelvin têm divisões do mesmo tamanho, a conversão entre elas fica bem simples:",
+    "<span class='formula'>&theta;K = &theta;C + 273</span>",
+    "Veja exemplos: 25 °C equivalem a 298 K (25 + 273). Para passar 36 °C para Fahrenheit: &theta;F = 32 + 9 &middot; 36 / 5 = 32 + 64,8 = 96,8 °F. E 32 °F equivalem a 0 °C (a água congelando)."
+  ],
+  perguntas:[
+    { tipo:"aplicacao",
+      enunciado:"Converta 50 °C para a escala Kelvin e também para a escala Fahrenheit. Mostre a conta.",
+      modelo:"Para Kelvin: θK = θC + 273 = 50 + 273 = 323 K. Para Fahrenheit: θF = 32 + 9·θC/5 = 32 + 9·50/5 = 32 + 90 = 122 °F. Então 50 °C = 323 K = 122 °F.",
+      chk:["Cheguei a 323 K usando θK = θC + 273?","Cheguei a 122 °F usando a conversão com 32 e 9/5?","Mostrei as contas, e não só os resultados?"] },
+    { tipo:"aplicacao",
+      enunciado:"No livro «Fahrenheit 451», o título é a temperatura em que o papel pega fogo: 451 °F equivalem a cerca de 233 °C. Mostre, com um cálculo aproximado, por que 451 °F dá perto de 233 °C.",
+      modelo:"Uso a relação θC/5 = (θF − 32)/9, logo θC = 5·(θF − 32)/9. Substituindo: θC = 5·(451 − 32)/9 = 5·419/9 = 2095/9 ≈ 232,8 °C, que arredondando dá cerca de 233 °C. Por isso o título em Fahrenheit corresponde a aproximadamente 233 °C.",
+      chk:["Usei a relação para isolar θC = 5·(θF − 32)/9?","Substituí 451 e cheguei perto de 233 °C?","Mostrei o cálculo passo a passo?"] },
+    { tipo:"conceitual",
+      enunciado:"Explique por que a escala Kelvin é chamada de «escala absoluta» e o que representa o 0 K.",
+      modelo:"A Kelvin é chamada de absoluta porque começa no zero absoluto, que é a menor temperatura possível, onde a agitação das partículas é mínima. Esse 0 K equivale a −273 °C. Como não existe temperatura abaixo dele, a escala Kelvin não tem números negativos, e por isso é a escala usada na ciência.",
+      chk:["Expliquei que 0 K é o zero absoluto, a menor temperatura possível?","Citei que 0 K equivale a −273 °C?"] }
+  ]
+},
+{
+  id:"b3", num:3, etapa:"Termômetro · medir o calor",
+  titulo:"Dilatação térmica",
+  paginas:"Cap. 9",
+  texto:[
+    "Quando um corpo é aquecido, suas partículas se agitam mais e se afastam umas das outras. Com isso o corpo aumenta de tamanho: dizemos que ele <b>dilata</b>. Ao esfriar, as partículas se agitam menos e se aproximam, e o corpo <b>contrai</b>.",
+    "Cada material dilata de um jeito. O <b>coeficiente de dilatação</b> é a grandeza que mede a facilidade de um material dilatar — ele varia conforme o material. De modo geral, os <b>líquidos dilatam mais que os sólidos</b>, e os <b>gases dilatam ainda mais</b>. Um experimento famoso é o de Gravesande: uma esfera de metal passa por uma argola quando está fria, mas, depois de aquecida, dilata e não passa mais.",
+    "A dilatação dos sólidos pode ser de três tipos, conforme as dimensões que mais importam. A <b>linear</b> acontece quando interessa uma só dimensão, o comprimento (fios elétricos, trilhos de trem, varais). A <b>superficial</b> envolve duas dimensões, a área (chapas de metal, pisos cerâmicos). A <b>volumétrica</b> envolve as três dimensões, o volume (esferas, cubos, pontes de concreto). Por isso trilhos, pisos e pontes são construídos com <b>juntas de dilatação</b>, pequenos espaços vazios que dão lugar para o material crescer sem rachar.",
+    "A água tem um <b>comportamento anômalo</b> (fora do comum): entre 0 °C e 4 °C, ao ser resfriada, ela <b>aumenta</b> de volume, ao contrário da maioria das substâncias, que encolhem quando esfriam."
+  ],
+  perguntas:[
+    { tipo:"conceitual",
+      enunciado:"Explique o que é a dilatação térmica e por que ela acontece quando um corpo é aquecido.",
+      modelo:"Dilatação térmica é o aumento de tamanho de um corpo quando ele é aquecido. Ela acontece porque, com o calor, as partículas do corpo se agitam mais e se afastam umas das outras, o que faz o corpo crescer. Quando esfria, as partículas se aproximam e o corpo contrai.",
+      chk:["Disse que dilatação é o aumento de tamanho com o aquecimento?","Expliquei que as partículas se agitam mais e se afastam?"] },
+    { tipo:"aplicacao",
+      enunciado:"Os trilhos de trem e as pontes de concreto são construídos com pequenos vãos (juntas de dilatação) entre os pedaços. Explique, com as suas palavras, para que servem esses vãos.",
+      modelo:"Esses vãos servem para dar espaço para o material dilatar nos dias quentes. Quando o sol aquece os trilhos ou a ponte, o material cresce; se não houvesse vão, um pedaço empurraria o outro e a estrutura poderia entortar ou rachar. A junta de dilatação deixa o material crescer e encolher sem estragar.",
+      chk:["Liguei os vãos à dilatação do material no calor?","Expliquei que sem o vão a estrutura poderia entortar ou rachar?","Usei um exemplo do texto (trilho, ponte ou piso)?"] },
+    { tipo:"aplicacao",
+      enunciado:"No inverno de lugares muito frios, a água dos lagos congela primeiro na superfície, e os peixes sobrevivem embaixo. Relacione esse fato ao comportamento anômalo da água descrito no texto.",
+      modelo:"A água tem comportamento anômalo: entre 0 °C e 4 °C, ao esfriar, ela aumenta de volume e fica menos densa. Por ficar mais leve, essa água mais fria sobe e congela primeiro na superfície. O gelo de cima funciona como uma tampa, e embaixo a água continua líquida e mais quente, o que permite os peixes sobreviverem.",
+      chk:["Citei que entre 0 °C e 4 °C a água aumenta de volume ao esfriar?","Liguei isso ao fato de o gelo se formar na superfície?","Escrevi com as minhas palavras, sem copiar o texto?"] }
+  ]
+},
+{
+  id:"b4", num:4, etapa:"Fluxo · o calor viajando",
+  titulo:"As três formas de propagação do calor",
+  paginas:"Cap. 10",
+  texto:[
+    "O calor pode viajar de um lugar para outro de três formas diferentes.",
+    "Na <b>condução</b>, o calor passa de partícula a partícula, sem que o material se desloque. Ela precisa de um <b>meio material</b> e é típica dos <b>sólidos</b>. Os metais são bons <b>condutores</b> de calor; já madeira, borracha, ar e papel são <b>isolantes térmicos</b> (conduzem mal o calor). É por isso que a alça de metal de uma panela esquenta e o cabo de madeira, não.",
+    "Na <b>convecção</b>, o calor se espalha por <b>correntes</b> dentro de um fluido (líquidos e gases). O fluido aquecido fica menos denso e sobe, enquanto o mais frio desce — formam-se as <b>correntes de convecção</b>. É assim que funcionam a geladeira (o congelador fica em cima para o ar frio descer), o forno e as brisas do mar e da terra. A convecção também precisa de meio material.",
+    "Na <b>irradiação</b> (ou radiação), o calor viaja por <b>ondas eletromagnéticas</b> e, por isso, <b>não precisa de meio material</b>: pode se propagar até no vácuo. É assim que o calor do Sol chega até a Terra, atravessando o espaço vazio."
+  ],
+  perguntas:[
+    { tipo:"conceitual",
+      enunciado:"Cite as três formas de propagação do calor e diga qual delas NÃO precisa de meio material para acontecer.",
+      modelo:"As três formas são condução, convecção e irradiação. A irradiação é a única que não precisa de meio material, porque o calor viaja por ondas eletromagnéticas e pode se propagar até no vácuo. A condução e a convecção precisam de um meio material.",
+      chk:["Citei as três formas corretamente?","Disse que a irradiação não precisa de meio material?"] },
+    { tipo:"aplicacao",
+      enunciado:"Diga qual forma de propagação explica cada situação e por quê: (a) a colher de metal esquenta ao ficar dentro da sopa quente; (b) o ar quente sobe dentro do forno ligado; (c) você sente o calor do Sol na pele num dia de céu aberto.",
+      modelo:"(a) Condução: o calor passa de partícula a partícula pelo metal da colher, que é bom condutor. (b) Convecção: o ar quente fica menos denso e sobe, formando correntes dentro do forno. (c) Irradiação: o calor do Sol viaja por ondas eletromagnéticas e atravessa o espaço vazio até chegar à pele.",
+      chk:["Liguei a colher de metal à condução?","Liguei o ar quente que sobe à convecção?","Liguei o calor do Sol à irradiação?"] },
+    { tipo:"aplicacao",
+      enunciado:"Uma garrafa térmica tem paredes duplas com vácuo entre elas. Explique por que esse vácuo ajuda a manter o líquido quente, pensando nas formas de propagação que ele consegue barrar.",
+      modelo:"O vácuo entre as paredes não tem partículas, então corta a condução e a convecção, que precisam de meio material para acontecer. Sem matéria no caminho, o calor quase não escapa por essas duas vias. Assim, o líquido perde calor muito mais devagar e continua quente por mais tempo.",
+      chk:["Disse que o vácuo barra a condução e a convecção por não ter meio material?","Concluí que por isso o líquido perde calor mais devagar?","Escrevi com as minhas palavras, sem copiar o texto?"] }
+  ]
+},
+{
+  id:"b5", num:5, etapa:"Fluxo · o calor viajando",
+  titulo:"Calor sensível: Q = m · c · Δθ",
+  paginas:"Cap. 10",
+  texto:[
+    "Quando um corpo recebe calor e <b>muda de temperatura</b> (fica mais quente ou mais frio), sem mudar de estado físico, dizemos que ele recebeu <b>calor sensível</b>. A quantidade de calor é calculada por:",
+    "<span class='formula'>Q = m &middot; c &middot; &Delta;&theta;</span>",
+    "Nessa fórmula, <b>m</b> é a massa (em gramas), <b>c</b> é o <b>calor específico</b> do material [em cal/(g&middot;°C)] e <b>&Delta;&theta;</b> é a variação de temperatura (temperatura final menos a inicial, em °C).",
+    "O <b>calor específico</b> diz quanto calor é preciso para esquentar 1 grama de um material em 1 °C. O da <b>água é 1 cal/(g&middot;°C)</b>: 1 grama de água precisa de 1 caloria para variar 1 °C. A areia tem calor específico bem menor que o da água, por isso esquenta e esfria mais rápido — é por isso que, na praia, a areia fica escaldante enquanto o mar continua fresco.",
+    "Uma caloria equivale a cerca de <b>4,184 J</b> (joules) — aproximadamente 4,2 J. Atenção: na <b>nutrição</b>, a «Caloria» com C maiúsculo vale 1 kcal, ou seja, 1000 cal.",
+    "Exemplo: para aquecer 50 g de uma substância de calor específico 0,4 cal/(g&middot;°C) de 10 °C até 60 °C (ou seja, &Delta;&theta; = 50 °C), temos Q = 50 &middot; 0,4 &middot; 50 = 1000 cal."
+  ],
+  perguntas:[
+    { tipo:"aplicacao",
+      enunciado:"Calcule a quantidade de calor necessária para aquecer 200 g de água (c = 1 cal/(g·°C)) de 20 °C até 70 °C. Mostre a conta.",
+      modelo:"Uso Q = m·c·Δθ. A variação é Δθ = 70 − 20 = 50 °C. Então Q = 200 · 1 · 50 = 10 000 cal (ou 10 kcal). São necessárias 10 000 calorias.",
+      chk:["Calculei Δθ = 50 °C (70 − 20)?","Usei Q = m·c·Δθ e cheguei a 10 000 cal?","Mostrei a conta?"] },
+    { tipo:"aplicacao",
+      enunciado:"Num dia de sol forte, a areia da praia queima o pé mas a água do mar está fresca. Explique isso usando a ideia de calor específico.",
+      modelo:"A areia tem calor específico bem menor que o da água. Isso significa que ela precisa de pouco calor para esquentar muito, então o sol a deixa escaldante rapidamente. A água, com calor específico alto, precisa de muito mais calor para variar a mesma temperatura, por isso demora a esquentar e fica fresca. Pela mesma razão, à noite a areia esfria rápido e o mar continua morno.",
+      chk:["Disse que a areia tem calor específico menor que o da água?","Liguei o calor específico menor ao fato de a areia esquentar rápido?","Expliquei por que a água demora a esquentar?"] },
+    { tipo:"conceitual",
+      enunciado:"Explique, com as suas palavras, o que significa dizer que o calor específico da água é 1 cal/(g·°C).",
+      modelo:"Significa que é preciso 1 caloria de calor para fazer 1 grama de água variar 1 °C na temperatura. É uma medida de quanto calor o material «pede» para esquentar. Como esse valor é alto em comparação com outros materiais, a água custa a esquentar e a esfriar.",
+      chk:["Expliquei que é 1 caloria para 1 grama variar 1 °C?","Mostrei que o calor específico indica quanto calor o material precisa para esquentar?"] }
+  ]
+},
+{
+  id:"b6", num:6, etapa:"Fluxo · o calor viajando",
+  titulo:"Calor latente e mudanças de estado: Q = m · L",
+  paginas:"Cap. 10",
+  texto:[
+    "Às vezes o corpo recebe calor mas a <b>temperatura não muda</b>: toda a energia é usada para <b>mudar o estado físico</b> (de sólido para líquido, de líquido para gás etc.). Esse é o <b>calor latente</b>, calculado por:",
+    "<span class='formula'>Q = m &middot; L</span>",
+    "Aqui <b>m</b> é a massa e <b>L</b> é o <b>calor específico latente</b> (em cal/g), que depende do material e do tipo de mudança. Para a água, o calor latente de <b>fusão</b> (derreter) é L = 80 cal/g e o de <b>vaporização</b> (virar vapor) é L = 540 cal/g.",
+    "Durante a mudança de estado a <b>temperatura fica constante</b>: por exemplo, a água fervendo continua a 100 °C enquanto está virando vapor, mesmo recebendo calor o tempo todo. As mudanças de estado são reversíveis: para fundir ou vaporizar, o corpo <b>recebe</b> calor; para solidificar ou condensar, o corpo <b>cede</b> calor.",
+    "A <b>curva de aquecimento da água</b> mostra isso num gráfico: há <b>rampas inclinadas</b> quando só a temperatura sobe (calor sensível) e <b>patamares horizontais</b> (linha reta) durante a fusão, a 0 °C, e a vaporização, a 100 °C, quando a temperatura não muda (calor latente)."
+  ],
+  perguntas:[
+    { tipo:"aplicacao",
+      enunciado:"Calcule quanto calor é preciso para derreter (fundir) 30 g de gelo que já está a 0 °C. Use L = 80 cal/g e mostre a conta.",
+      modelo:"Como o gelo já está a 0 °C, todo o calor vai para a fusão, então uso Q = m·L. Logo Q = 30 · 80 = 2400 cal. São necessárias 2400 calorias para derreter os 30 g de gelo.",
+      chk:["Usei Q = m·L com L = 80 cal/g?","Cheguei a 2400 cal?","Mostrei a conta?"] },
+    { tipo:"aplicacao",
+      enunciado:"A água fervendo numa panela fica a 100 °C e não passa disso, por mais que o fogo continue aquecendo. Explique por que a temperatura não sobe durante a fervura.",
+      modelo:"Durante a mudança de estado a temperatura fica constante. Enquanto a água está fervendo, todo o calor que ela recebe é usado para transformar o líquido em vapor (calor latente de vaporização), e não para aumentar a temperatura. Por isso ela trava em 100 °C até toda virar vapor; só depois a temperatura poderia subir.",
+      chk:["Disse que na mudança de estado a temperatura fica constante?","Expliquei que o calor está sendo usado para virar vapor, não para esquentar?","Escrevi com as minhas palavras?"] },
+    { tipo:"conceitual",
+      enunciado:"Explique a diferença entre calor sensível e calor latente.",
+      modelo:"O calor sensível muda a temperatura do corpo sem mudar o estado físico, e é calculado por Q = m·c·Δθ. O calor latente muda o estado físico sem mudar a temperatura (ela fica constante), e é calculado por Q = m·L. Em resumo: sensível mexe no termômetro; latente mexe no estado da matéria.",
+      chk:["Disse que o calor sensível muda a temperatura e usa Q = m·c·Δθ?","Disse que o calor latente muda o estado e usa Q = m·L, com temperatura constante?"] }
+  ]
+},
+{
+  id:"b7", num:7, etapa:"Onda · a vibração",
+  titulo:"Ondas: o que são e como se classificam",
+  paginas:"Cap. 11",
+  texto:[
+    "Uma <b>onda</b> é uma perturbação que se propaga transportando <b>energia</b>, mas <b>não transporta matéria</b>. Pense numa corda sacudida: a «onda» anda pela corda, mas cada pedacinho da corda só sobe e desce no lugar, não viaja junto. Quando a perturbação é única (um só «tranco»), chamamos de <b>pulso</b>.",
+    "As ondas se classificam de três maneiras. Quanto à <b>natureza</b>: as <b>mecânicas</b> precisam de um meio material para se propagar (o som, as ondas do mar, as ondas numa corda, as ondas sísmicas); as <b>eletromagnéticas</b> se propagam até no vácuo (a luz, as ondas de rádio, a TV, o sinal de celular, o micro-ondas).",
+    "Quanto à <b>direção de propagação</b>: podem ser unidimensionais (corda), bidimensionais (a superfície da água de um lago) ou tridimensionais (o som se espalhando pelo ar em todas as direções).",
+    "Quanto à <b>direção de vibração</b>: nas <b>transversais</b>, a vibração é perpendicular (a 90°) à direção em que a onda anda (como na corda sacudida de cima para baixo); nas <b>longitudinais</b>, a vibração ocorre na mesma direção em que a onda se propaga (o <b>som é longitudinal</b>).",
+    "Os <b>elementos</b> de uma onda são: a <b>crista</b> (o ponto mais alto), o <b>vale</b> (o mais baixo), a <b>amplitude</b> (a distância da posição de equilíbrio até a crista ou o vale — quanto maior a amplitude, mais energia a onda carrega) e o <b>comprimento de onda (&lambda;)</b> (a distância entre duas cristas seguidas)."
+  ],
+  perguntas:[
+    { tipo:"conceitual",
+      enunciado:"O que uma onda transporta e o que ela NÃO transporta? Use o exemplo da corda para explicar.",
+      modelo:"A onda transporta energia, mas não transporta matéria. Na corda sacudida, a onda anda de uma ponta à outra levando energia, mas cada pedaço da corda só sobe e desce no mesmo lugar, sem se deslocar junto com a onda. A matéria fica; só a energia viaja.",
+      chk:["Disse que a onda transporta energia?","Disse que ela não transporta matéria?","Usei o exemplo da corda (o pedaço só sobe e desce no lugar)?"] },
+    { tipo:"aplicacao",
+      enunciado:"Classifique cada onda a seguir como mecânica ou eletromagnética e justifique: (a) a luz do Sol; (b) o som de uma conversa; (c) o sinal do celular; (d) a onda do mar.",
+      modelo:"(a) Eletromagnética, porque a luz se propaga até no vácuo e atravessa o espaço. (b) Mecânica, porque o som precisa de um meio material (o ar). (c) Eletromagnética, pois o sinal do celular viaja sem precisar de meio. (d) Mecânica, pois a onda do mar precisa da água para existir.",
+      chk:["Classifiquei luz e sinal de celular como eletromagnéticas?","Classifiquei som e onda do mar como mecânicas?","Justifiquei pelo menos duas com a ideia de precisar ou não de meio material?"] },
+    { tipo:"aplicacao",
+      enunciado:"Explique a diferença entre onda transversal e onda longitudinal e dê um exemplo de cada uma.",
+      modelo:"Na onda transversal, a vibração é perpendicular (a 90°) à direção em que a onda anda — por exemplo, uma corda sacudida para cima e para baixo enquanto a onda avança na horizontal. Na onda longitudinal, a vibração é na mesma direção em que a onda se propaga — o som é o exemplo, pois o ar comprime e estica na mesma direção em que o som caminha.",
+      chk:["Expliquei a transversal como vibração perpendicular à propagação?","Expliquei a longitudinal como vibração na mesma direção da propagação?","Dei um exemplo de cada (corda e som)?"] }
+  ]
+},
+{
+  id:"b8", num:8, etapa:"Onda · a vibração",
+  titulo:"Período, frequência e velocidade da onda",
+  paginas:"Cap. 11",
+  texto:[
+    "O <b>período (T)</b> é o tempo que a onda leva para completar uma oscilação inteira. Calcula-se dividindo o tempo total pelo número de repetições: T = tempo total / número de oscilações.",
+    "A <b>frequência (f)</b> é o número de oscilações que acontecem em cada segundo: f = número de oscilações / tempo. A unidade de frequência é o <b>hertz (Hz)</b>; 1 Hz quer dizer uma oscilação por segundo (o nome é uma homenagem a Heinrich Hertz).",
+    "Período e frequência são o inverso um do outro:",
+    "<span class='formula'>T = 1 / f &nbsp;&nbsp;e&nbsp;&nbsp; f = 1 / T</span>",
+    "Exemplo: uma onda que oscila 15 vezes em 60 s tem T = 60/15 = 4 s e f = 15/60 = 0,25 Hz.",
+    "A <b>velocidade (v)</b> da onda relaciona o comprimento de onda e a frequência:",
+    "<span class='formula'>v = &lambda; &middot; f &nbsp;&nbsp;(tamb&eacute;m v = &lambda; / T)</span>",
+    "No Sistema Internacional, v é dada em m/s, &lambda; em metros (m) e f em hertz (Hz). Com a velocidade constante, quanto maior o comprimento de onda, menor a frequência. Exemplo: uma corda que oscila 20 vezes em 2 s tem f = 10 Hz; se &lambda; = 30 cm = 0,3 m, então v = &lambda; &middot; f = 0,3 &middot; 10 = 3 m/s."
+  ],
+  perguntas:[
+    { tipo:"aplicacao",
+      enunciado:"Uma boia no mar sobe e desce 40 vezes em 20 segundos. Calcule o período e a frequência desse movimento. Mostre a conta.",
+      modelo:"Frequência: f = número de oscilações / tempo = 40/20 = 2 Hz. Período: T = tempo / número de oscilações = 20/40 = 0,5 s (ou T = 1/f = 1/2 = 0,5 s). Então f = 2 Hz e T = 0,5 s.",
+      chk:["Calculei f = 2 Hz (40 ÷ 20)?","Calculei T = 0,5 s?","Mostrei a conta?"] },
+    { tipo:"aplicacao",
+      enunciado:"Uma onda tem frequência de 5 Hz e comprimento de onda de 0,4 m. Calcule a velocidade da onda. Mostre a conta.",
+      modelo:"Uso v = λ·f = 0,4 · 5 = 2 m/s. A velocidade da onda é 2 m/s.",
+      chk:["Usei v = λ·f?","Cheguei a 2 m/s?","Mostrei a conta?"] },
+    { tipo:"conceitual",
+      enunciado:"Explique, com as suas palavras, a relação entre período e frequência.",
+      modelo:"Período e frequência são inversos um do outro: T = 1/f e f = 1/T. O período é o tempo de uma oscilação completa, e a frequência é quantas oscilações cabem em um segundo. Se a frequência é alta, cada oscilação dura pouco (período pequeno); se a frequência é baixa, cada oscilação demora mais (período grande).",
+      chk:["Disse que T e f são inversos (T = 1/f)?","Expliquei que frequência alta significa período pequeno (e vice-versa)?"] }
+  ]
+},
+{
+  id:"b9", num:9, etapa:"Onda · a vibração",
+  titulo:"O som: velocidade e faixa audível",
+  paginas:"Cap. 11",
+  texto:[
+    "O <b>som</b> é uma onda <b>mecânica</b> e <b>longitudinal</b>. Por ser mecânica, <b>não se propaga no vácuo</b>: precisa de um meio material, como o ar. Ele se forma por ciclos de <b>compressão</b> (o ar se aperta) e <b>rarefação</b> (o ar se afasta) das moléculas do meio. O ramo da Física que estuda o som é a <b>Acústica</b>.",
+    "A <b>velocidade do som</b> no ar, a cerca de 20 °C, é de aproximadamente <b>340 m/s</b>. O som se propaga <b>mais rápido em líquidos e sólidos</b> do que no ar, porque nesses meios as partículas estão mais próximas e passam a vibração adiante com mais facilidade.",
+    "O ouvido humano só escuta sons dentro de uma <b>faixa audível</b>, que vai de <b>20 Hz a 20 000 Hz</b> (20 kHz). Abaixo de 20 Hz está o <b>infrassom</b>; acima de 20 kHz está o <b>ultrassom</b>. Alguns animais usam sons fora da nossa faixa para se orientar: golfinhos e morcegos fazem <b>ecolocalização</b>, emitindo ultrassons e escutando o eco para «enxergar» obstáculos."
+  ],
+  perguntas:[
+    { tipo:"conceitual",
+      enunciado:"Por que o som NÃO se propaga no vácuo? Relacione com o tipo de onda que ele é.",
+      modelo:"O som é uma onda mecânica, e toda onda mecânica precisa de um meio material para se propagar. No vácuo não há partículas para comprimir e rarefazer, então não há como o som se transmitir. Por isso, no espaço, onde há vácuo, não se ouve som.",
+      chk:["Disse que o som é onda mecânica e precisa de meio material?","Expliquei que no vácuo não há partículas para transmitir o som?"] },
+    { tipo:"aplicacao",
+      enunciado:"O som se propaga mais rápido no ar, na água ou num trilho de aço? Explique por que, usando a ideia de como as partículas estão organizadas em cada meio.",
+      modelo:"O som é mais rápido no trilho de aço, depois na água e, por último, no ar. Isso acontece porque nos sólidos as partículas estão muito próximas umas das outras, então passam a vibração adiante rapidamente; nos líquidos elas estão um pouco mais afastadas, e no ar (gás) estão bem distantes, o que torna a propagação mais lenta.",
+      chk:["Coloquei o aço (sólido) como o mais rápido e o ar como o mais lento?","Liguei a velocidade à proximidade das partículas em cada meio?","Escrevi com as minhas palavras?"] },
+    { tipo:"aplicacao",
+      enunciado:"Classifique cada som como infrassom, audível ou ultrassom: (a) um som de 10 Hz; (b) um som de 2000 Hz; (c) o som de 40 000 Hz que um morcego usa para se orientar. Explique a (c).",
+      modelo:"(a) 10 Hz é infrassom, porque está abaixo de 20 Hz. (b) 2000 Hz é audível, porque está entre 20 Hz e 20 000 Hz. (c) 40 000 Hz é ultrassom, porque está acima de 20 000 Hz; o morcego usa esse ultrassom na ecolocalização, emitindo o som e ouvindo o eco para detectar obstáculos, mesmo sendo um som que nós não escutamos.",
+      chk:["Classifiquei 10 Hz como infrassom e 2000 Hz como audível?","Classifiquei 40 000 Hz como ultrassom?","Expliquei a ecolocalização do morcego no item (c)?"] }
+  ]
+},
+{
+  id:"b10", num:10, etapa:"Onda · a vibração",
+  titulo:"Qualidades do som e fenômenos sonoros",
+  paginas:"Cap. 11",
+  texto:[
+    "O som tem três <b>qualidades</b>. A <b>altura</b> diz se um som é agudo ou grave e está ligada à <b>frequência</b>: frequência alta dá som <b>agudo</b> (fino), frequência baixa dá som <b>grave</b> (grosso). A <b>intensidade</b> diz se o som é forte ou fraco e está ligada à <b>amplitude</b> e à energia; é medida em <b>decibel (dB)</b>, e acima de cerca de <b>120 dB</b> o som pode lesar a audição. O <b>timbre</b> é o que nos permite identificar a <b>fonte</b> do som; está ligado à <b>forma</b> da onda e é o que faz distinguir, por exemplo, a mesma nota «lá» tocada no piano e no violino.",
+    "Cuidado para não confundir: <b>altura</b> não tem a ver com volume — um som agudo pode ser fraco, e um som grave pode ser forte. Altura é agudo/grave (frequência); intensidade é forte/fraco (amplitude).",
+    "Há ainda dois <b>fenômenos</b> importantes. A <b>ressonância</b> acontece quando um objeto é estimulado por uma fonte que vibra na mesma frequência natural dele e passa a vibrar junto, com força crescente — como a taça de cristal que quebra com um som agudo, ou a ponte de Tacoma, que balançou e ruiu em 1940.",
+    "O <b>eco</b> é a reflexão do som numa superfície. O nosso ouvido só consegue separar dois sons se houver um intervalo de pelo menos <b>0,1 s</b> entre eles. Como o som anda a 340 m/s, em 0,1 s ele percorre 34 m (ida e volta); por isso é preciso estar a pelo menos <b>17 m</b> da superfície (metade dos 34 m) para ouvir o eco separado do som original."
+  ],
+  perguntas:[
+    { tipo:"conceitual",
+      enunciado:"Cite as três qualidades do som e diga a que cada uma está ligada.",
+      modelo:"As três qualidades são altura, intensidade e timbre. A altura está ligada à frequência (agudo ou grave). A intensidade está ligada à amplitude e à energia (som forte ou fraco, medida em decibéis). O timbre está ligado à forma da onda e permite identificar a fonte do som.",
+      chk:["Citei altura, intensidade e timbre?","Liguei altura à frequência e intensidade à amplitude?","Liguei o timbre à forma da onda / à identificação da fonte?"] },
+    { tipo:"aplicacao",
+      enunciado:"O mesmo «lá» tocado num piano e num violino soa diferente, mesmo tendo a mesma nota. Qual qualidade do som explica isso? Explique por que as outras duas não servem para diferenciar.",
+      modelo:"É o timbre que explica, porque ele depende da forma da onda e permite identificar a fonte do som. A altura não serve porque, sendo a mesma nota «lá», a frequência é igual nos dois. A intensidade também não serve porque ela só diria se um está mais forte que o outro, não qual instrumento é. O que diferencia o piano do violino é mesmo o timbre.",
+      chk:["Disse que é o timbre que diferencia os instrumentos?","Expliquei que a altura é igual (mesma nota/frequência)?","Expliquei que a intensidade só mede forte/fraco, não a fonte?"] },
+    { tipo:"aplicacao",
+      enunciado:"Explique por que, para ouvir o eco de um grito separado da sua própria voz, você precisa estar a pelo menos 17 m de um paredão. Use o valor da velocidade do som.",
+      modelo:"O ouvido só separa dois sons se houver pelo menos 0,1 s entre eles. Como o som anda a 340 m/s, em 0,1 s ele percorre 340 · 0,1 = 34 m. Mas esse caminho é de ida e volta até o paredão, então a distância até ele é a metade: 34 ÷ 2 = 17 m. Por isso, abaixo de 17 m, o eco volta rápido demais e se mistura com a voz.",
+      chk:["Usei que o som percorre 34 m em 0,1 s (340 × 0,1)?","Expliquei que 34 m é ida e volta, então a distância é a metade, 17 m?","Mostrei o raciocínio com a conta?"] }
+  ]
+}
+];
+
+const PEGADINHAS = [
+ "Temperatura e calor não são a mesma coisa: temperatura é o grau de agitação das partículas; calor é energia em trânsito entre corpos de temperaturas diferentes.",
+ "Para converter Celsius em Kelvin some 273 (θK = θC + 273). Não é 273 em Fahrenheit — lá a fusão da água é 32 °F e a ebulição 212 °F.",
+ "Líquidos dilatam mais que sólidos, e gases mais que líquidos. E a água é a exceção: entre 0 °C e 4 °C ela aumenta de volume ao esfriar (comportamento anômalo).",
+ "Só a irradiação dispensa meio material (viaja no vácuo, como o calor do Sol). Condução e convecção precisam de matéria.",
+ "Condução é típica dos sólidos (partícula a partícula); convecção é dos fluidos (correntes de ar/água); não troque uma pela outra.",
+ "Calor sensível muda a temperatura (Q = m·c·Δθ). Calor latente muda o estado físico e a temperatura fica constante (Q = m·L).",
+ "Durante a mudança de estado a temperatura NÃO sobe: a água fervendo fica em 100 °C até virar todo vapor.",
+ "Onda transporta energia, não matéria. O som é onda mecânica e longitudinal, e não se propaga no vácuo.",
+ "Altura (agudo/grave) depende da frequência; intensidade (forte/fraco, em dB) depende da amplitude. Som agudo não quer dizer som alto.",
+ "No eco, o som percorre 34 m em 0,1 s, mas isso é ida e volta: a distância mínima até a parede é a metade, 17 m."
+];
+
+const COBERTURA = [
+ ["Termologia, temperatura, calor e equilíbrio térmico","Bloco 1","Cap. 9"],
+ ["Sensação térmica e o experimento das duas mãos","Bloco 1","Cap. 9"],
+ ["Escalas Celsius, Fahrenheit e Kelvin","Bloco 2","Cap. 9"],
+ ["Conversão de escalas e θK = θC + 273","Bloco 2","Cap. 9"],
+ ["Dilatação térmica, coeficiente e experimento de Gravesande","Bloco 3","Cap. 9"],
+ ["Dilatação linear, superficial e volumétrica; juntas de dilatação","Bloco 3","Cap. 9"],
+ ["Comportamento anômalo da água (0 °C a 4 °C)","Bloco 3","Cap. 9"],
+ ["Condução, convecção e irradiação","Bloco 4","Cap. 10"],
+ ["Condutores e isolantes térmicos; vácuo na garrafa térmica","Bloco 4","Cap. 10"],
+ ["Calor sensível e Q = m·c·Δθ","Bloco 5","Cap. 10"],
+ ["Calor específico; água × areia; caloria e Caloria da nutrição","Bloco 5","Cap. 10"],
+ ["Calor latente e Q = m·L (fusão 80, vaporização 540 cal/g)","Bloco 6","Cap. 10"],
+ ["Mudanças de estado, temperatura constante e curva de aquecimento","Bloco 6","Cap. 10"],
+ ["Onda transporta energia e não matéria; pulso","Bloco 7","Cap. 11"],
+ ["Classificação: mecânica/eletromagnética, direção e vibração","Bloco 7","Cap. 11"],
+ ["Elementos da onda: crista, vale, amplitude e comprimento de onda","Bloco 7","Cap. 11"],
+ ["Período, frequência, hertz e T = 1/f","Bloco 8","Cap. 11"],
+ ["Velocidade da onda v = λ·f","Bloco 8","Cap. 11"],
+ ["O som como onda mecânica longitudinal; compressão e rarefação","Bloco 9","Cap. 11"],
+ ["Velocidade do som (340 m/s) e meios; faixa audível, infra e ultrassom","Bloco 9","Cap. 11"],
+ ["Qualidades do som: altura, intensidade e timbre","Bloco 10","Cap. 11"],
+ ["Ressonância e eco (0,1 s, 17 m)","Bloco 10","Cap. 11"]
+];
+
+
+/* ---------- armazenamento seguro ---------- */
+var CHAVE="fisica9_leitura_v1";
+var memoria={};
+function ler(){try{var s=localStorage.getItem(CHAVE);return s?JSON.parse(s):null;}catch(e){return memoria[CHAVE]||null;}}
+function gravar(o){o.quando=new Date().toISOString();try{localStorage.setItem(CHAVE,JSON.stringify(o));}catch(e){memoria[CHAVE]=o;}mostrarSalvo();}
+function apagar(){try{localStorage.removeItem(CHAVE);}catch(e){}delete memoria[CHAVE];}
+var estado=ler()||{respostas:{},blocos:{},quando:null};
+function mostrarSalvo(){
+  var el=document.getElementById("saved");
+  if(!estado.quando){el.textContent="Nada salvo ainda.";return;}
+  var d=new Date(estado.quando);
+  el.textContent="Salvo automaticamente em "+d.toLocaleDateString("pt-BR")+" às "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+}
+
+/* ---------- modal (nada de alert/confirm/prompt) ---------- */
+function modal(titulo,texto,botoes,comArea,valorArea){
+  var m=document.getElementById("modal");
+  document.getElementById("mTit").textContent=titulo;
+  document.getElementById("mTxt").textContent=texto;
+  var a=document.getElementById("mArea");
+  a.style.display=comArea?"block":"none"; a.value=valorArea||"";
+  var f=document.getElementById("mFim"); f.innerHTML="";
+  botoes.forEach(function(b){
+    var x=document.createElement("button");
+    x.className="btn"+(b.primario?" primary":" ghost"); x.textContent=b.texto;
+    x.onclick=function(){ if(b.acao) b.acao(a.value); m.classList.remove("ver"); };
+    f.appendChild(x);
+  });
+  m.classList.add("ver");
+}
+
+/* ---------- anticópia ---------- */
+function normal(s){
+  return (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")
+    .replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
+}
+function palavras(s){var n=normal(s);return n?n.split(" "):[];}
+function gramas(arr,n){var s={};for(var i=0;i+n<=arr.length;i++){s[arr.slice(i,i+n).join(" ")]=1;}return s;}
+/* marca as posicoes de "alvo" que pertencem a sequencias de n+ palavras tambem presentes em "fonte" */
+function marcar(alvo,fonte,n){
+  var m=new Array(alvo.length).fill(false);
+  if(alvo.length<n||fonte.length<n) return m;
+  var g=gramas(fonte,n);
+  for(var i=0;i+n<=alvo.length;i++){
+    if(g[alvo.slice(i,i+n).join(" ")]){for(var k=i;k<i+n;k++) m[k]=true;}
+  }
+  return m;
+}
+function ehTranscricao(resposta,textoBloco,enunciado){
+  var a=palavras(resposta); if(a.length<8) return false;
+  var f=palavras(textoBloco), q=palavras(enunciado);
+  /* desconta o que foi citado da propria pergunta (sequencias de 4+) */
+  var dq=marcar(a,q,4);
+  var filtrado=[]; for(var i=0;i<a.length;i++){ if(!dq[i]) filtrado.push(a[i]); }
+  if(filtrado.length<8) return false;
+  var m8=marcar(filtrado,f,8);
+  for(var j=0;j<m8.length;j++){ if(m8[j]) return true; }
+  var m5=marcar(filtrado,f,5), c=0;
+  for(var k=0;k<m5.length;k++){ if(m5[k]) c++; }
+  return (c/filtrado.length)>0.6;
+}
+
+/* ---------- montagem ---------- */
+function textoDoBloco(b){ return b.texto.join(" ").replace(/<[^>]+>/g,""); }
+
+function montar(){
+  var alvo=document.getElementById("blocos");
+  BLOCOS.forEach(function(b,idx){ alvo.appendChild(criar(b,idx)); });
+  BLOCOS.forEach(function(b,idx){ ligar(b,idx); });
+  atualizaBadges(); atualizaBarra(); atualizaRevisar();
+}
+
+function criar(b,idx){
+  var sec=document.createElement("section");
+  sec.className="bloco"; sec.id=b.id;
+  var liberado = idx===0 || (estado.blocos[BLOCOS[idx-1].id]&&estado.blocos[BLOCOS[idx-1].id].feito);
+  var h='<div class="cab"><span class="badge" id="bg-'+b.id+'" style="display:none"></span>'+
+        '<div class="etapa">'+b.etapa+'</div><h2>Bloco '+b.num+' · '+b.titulo+'</h2>'+
+        '<div class="pag">Livro, '+b.paginas+'</div></div>';
+  if(!liberado){
+    h+='<div class="cadeado">🔒 Este bloco abre depois que você conferir o bloco '+(b.num-1)+'.</div>';
+    sec.className+=" trancado"; sec.innerHTML=h; return sec;
+  }
+  h+='<div class="corpo">';
+  b.texto.forEach(function(p){ h+='<p class="tx">'+p+'</p>'; });
+  b.perguntas.forEach(function(q,i){
+    var qid=b.id+"-q"+i;
+    h+='<div class="perg" id="p-'+qid+'">'+
+       '<div class="num">PERGUNTA '+(i+1)+' DE 3</div>'+
+       '<div class="enun">'+q.enunciado+'</div>'+
+       '<textarea id="t-'+qid+'" placeholder="Escreva com as suas palavras..."></textarea>'+
+       '<div class="aviso" id="av-'+qid+'"></div>'+
+       '<div class="modelo" id="mo-'+qid+'"><div class="rot">Resposta modelo</div>'+q.modelo+'</div>'+
+       '<div class="chk" id="ck-'+qid+'"><div class="rot">Confira a sua resposta</div></div>'+
+       '</div>';
+  });
+  h+='<div class="acoes"><button class="btn primary" id="cf-'+b.id+'" disabled>Conferir bloco '+b.num+'</button>'+
+     '<span class="dica" id="dc-'+b.id+'">Responda as 3 perguntas para liberar.</span></div></div>';
+  sec.innerHTML=h;
+  return sec;
+}
+
+function ligar(b,idx){
+  var bt=document.getElementById("cf-"+b.id);
+  if(!bt) return; /* bloco ainda trancado */
+  b.perguntas.forEach(function(q,i){
+    var qid=b.id+"-q"+i, ta=document.getElementById("t-"+qid);
+    var r=estado.respostas[qid];
+    if(r&&r.resp) ta.value=r.resp;
+    ta.addEventListener("input",function(){
+      guardaResposta(qid,ta.value);
+      atualizaBotao(b);
+      if(estado.blocos[b.id]&&estado.blocos[b.id].feito) revisarMarcaVermelha(b,i);
+    });
+    if(estado.blocos[b.id]&&estado.blocos[b.id].feito) revelar(b,i);
+    if(r&&r.transcrita){ pintarVermelho(qid,true); avisoVermelho(qid); }
+  });
+  bt.onclick=function(){ conferir(b); };
+  atualizaBotao(b);
+}
+
+function avisoVermelho(qid){
+  var av=document.getElementById("av-"+qid); if(!av) return;
+  av.className="aviso vermelho";
+  av.innerHTML="<b>Ainda está parecida com o texto.</b> Vale como respondida, mas ficou marcada para revisar. Se reescrever com as suas palavras, a marca some sozinha.";
+}
+
+function guardaResposta(qid,v){
+  if(!estado.respostas[qid]) estado.respostas[qid]={resp:"",transcrita:false,tentou:null,chk:{}};
+  estado.respostas[qid].resp=v; gravar(estado);
+}
+function preenchida(qid){ var r=estado.respostas[qid]; return r&&r.resp&&r.resp.trim().length>=3; }
+function atualizaBotao(b){
+  var ok=b.perguntas.every(function(q,i){ return preenchida(b.id+"-q"+i); });
+  var bt=document.getElementById("cf-"+b.id); if(!bt) return;
+  bt.disabled=!ok;
+  var dc=document.getElementById("dc-"+b.id);
+  if(estado.blocos[b.id]&&estado.blocos[b.id].feito){ bt.textContent="Conferido ✓"; dc.textContent="Você já conferiu este bloco. Pode continuar ajustando as respostas."; }
+  else dc.textContent= ok ? "Pronto! Pode conferir." : "Responda as 3 perguntas para liberar.";
+}
+
+function conferir(b){
+  var pendente=false;
+  b.perguntas.forEach(function(q,i){
+    var qid=b.id+"-q"+i, r=estado.respostas[qid];
+    var av=document.getElementById("av-"+qid);
+    var copiou=ehTranscricao(r.resp,textoDoBloco(b),q.enunciado);
+    if(!copiou){ r.transcrita=false; r.tentou=null; av.className="aviso"; av.textContent=""; pintarVermelho(qid,false); return; }
+    if(!r.tentou){
+      r.tentou=r.resp; pendente=true;
+      av.className="aviso amarelo";
+      av.innerHTML="<b>Quase lá.</b> Boa parte da sua resposta está igual ao texto. Tente reescrever com as suas palavras — explique como se fosse para um amigo, sem olhar o texto. Pode ficar mais curto e simples, o que vale é ser SEU.";
+      return;
+    }
+    if(r.tentou===r.resp){
+      pendente=true;
+      av.className="aviso amarelo";
+      av.innerHTML="<b>A resposta continua a mesma.</b> Altere alguma coisa com as suas palavras para conferir de novo.";
+      return;
+    }
+    r.transcrita=true; r.tentou=null;
+    avisoVermelho(qid); pintarVermelho(qid,true);
+  });
+  gravar(estado);
+  if(pendente){ atualizaBarra(); atualizaRevisar(); return; }
+  estado.blocos[b.id]={feito:true,quando:new Date().toISOString()};
+  gravar(estado);
+  b.perguntas.forEach(function(q,i){ revelar(b,i); });
+  atualizaBotao(b); atualizaBadges(); atualizaBarra(); atualizaRevisar(); abrirProximo(b);
+}
+
+function pintarVermelho(qid,on){
+  var el=document.getElementById("p-"+qid); if(!el) return;
+  if(on) el.classList.add("vermelha"); else el.classList.remove("vermelha");
+}
+function revisarMarcaVermelha(b,i){
+  var qid=b.id+"-q"+i, r=estado.respostas[qid], q=b.perguntas[i];
+  if(!r) return;
+  var copiou=ehTranscricao(r.resp,textoDoBloco(b),q.enunciado);
+  if(r.transcrita&&!copiou){
+    r.transcrita=false; gravar(estado); pintarVermelho(qid,false);
+    var av=document.getElementById("av-"+qid); av.className="aviso"; av.textContent="";
+    atualizaBadges(); atualizaRevisar();
+  }
+}
+
+function revelar(b,i){
+  var qid=b.id+"-q"+i, q=b.perguntas[i];
+  document.getElementById("mo-"+qid).classList.add("ver");
+  var ck=document.getElementById("ck-"+qid);
+  if(ck.dataset.pronto!=="1"){
+    q.chk.forEach(function(t,j){
+      var div=document.createElement("div"); div.className="item";
+      div.innerHTML='<span>'+t+'</span><span class="opts">'+
+        '<button class="mini sim" data-q="'+qid+'" data-i="'+j+'" data-v="sim">Sim</button>'+
+        '<button class="mini nao" data-q="'+qid+'" data-i="'+j+'" data-v="nao">Não</button></span>';
+      ck.appendChild(div);
+    });
+    ck.dataset.pronto="1";
+    ck.querySelectorAll(".mini").forEach(function(bt){
+      bt.onclick=function(){
+        var qq=bt.dataset.q, ii=bt.dataset.i, vv=bt.dataset.v;
+        if(!estado.respostas[qq].chk) estado.respostas[qq].chk={};
+        estado.respostas[qq].chk[ii]=vv; gravar(estado);
+        pintarChk(qq); atualizaBadges(); atualizaRevisar();
+      };
+    });
+  }
+  ck.classList.add("ver"); pintarChk(qid);
+}
+function pintarChk(qid){
+  var ck=document.getElementById("ck-"+qid); if(!ck) return;
+  var marcas=(estado.respostas[qid]&&estado.respostas[qid].chk)||{};
+  ck.querySelectorAll(".mini").forEach(function(bt){
+    bt.classList.toggle("on", marcas[bt.dataset.i]===bt.dataset.v);
+  });
+}
+
+function statusBloco(b){
+  if(!(estado.blocos[b.id]&&estado.blocos[b.id].feito)) return null;
+  var ok=true;
+  b.perguntas.forEach(function(q,i){
+    var qid=b.id+"-q"+i, r=estado.respostas[qid]||{};
+    if(r.transcrita) ok=false;
+    q.chk.forEach(function(t,j){ if((r.chk||{})[j]!=="sim") ok=false; });
+  });
+  return ok?"ok":"rev";
+}
+function atualizaBadges(){
+  BLOCOS.forEach(function(b){
+    var el=document.getElementById("bg-"+b.id); if(!el) return;
+    var s=statusBloco(b);
+    if(!s){el.style.display="none";return;}
+    el.style.display="inline-block";
+    el.className="badge "+(s==="ok"?"ok":"rev");
+    el.textContent=(s==="ok"?"✅ tudo certo":"🔁 revisar");
+  });
+}
+function atualizaBarra(){
+  var f=BLOCOS.filter(function(b){return estado.blocos[b.id]&&estado.blocos[b.id].feito;}).length;
+  document.getElementById("barra").style.width=Math.round(f/BLOCOS.length*100)+"%";
+}
+function atualizaRevisar(){
+  var itens=[];
+  BLOCOS.forEach(function(b){
+    if(!(estado.blocos[b.id]&&estado.blocos[b.id].feito)) return;
+    b.perguntas.forEach(function(q,i){
+      var r=estado.respostas[b.id+"-q"+i]||{}, motivos=[];
+      if(r.transcrita) motivos.push("resposta muito parecida com o texto");
+      var faltou=[]; q.chk.forEach(function(t,j){ if((r.chk||{})[j]==="nao") faltou.push(t); });
+      if(faltou.length) motivos.push("faltou: "+faltou.join(" / "));
+      if(motivos.length) itens.push("<b>Bloco "+b.num+", pergunta "+(i+1)+"</b> — "+motivos.join("; "));
+    });
+  });
+  var box=document.getElementById("boxRevisar"), ul=document.getElementById("listaRevisar");
+  ul.innerHTML=itens.map(function(t){return "<li>"+t+"</li>";}).join("");
+  box.style.display=itens.length?"block":"none";
+}
+function abrirProximo(b){
+  var i=BLOCOS.indexOf(b);
+  if(i>=BLOCOS.length-1) return;
+  var prox=BLOCOS[i+1];
+  var velho=document.getElementById(prox.id);
+  if(!velho||!velho.classList.contains("trancado")) return;
+  var novo=criar(prox,i+1);
+  velho.parentNode.replaceChild(novo,velho);
+  ligar(prox,i+1); atualizaBadges();
+  novo.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* ---------- extras ---------- */
+document.getElementById("pegadinhas").innerHTML=PEGADINHAS.map(function(t){return "<li>"+t+"</li>";}).join("");
+document.getElementById("cobertura").innerHTML=COBERTURA.map(function(l){
+  return "<tr><td>"+l[0]+"</td><td>"+l[1]+"</td><td>"+l[2]+"</td></tr>";}).join("");
+
+document.getElementById("bExp").onclick=function(){
+  var saida={material:"Leitura Estendida",kit:"Pulso da Matéria — Física 9º ano, cap. 9, 10 e 11",
+    quando:estado.quando,blocos:{},respostas:{}};
+  BLOCOS.forEach(function(b){
+    saida.blocos[b.id]={titulo:b.titulo,feito:!!(estado.blocos[b.id]&&estado.blocos[b.id].feito),status:statusBloco(b)};
+    b.perguntas.forEach(function(q,i){
+      var qid=b.id+"-q"+i,r=estado.respostas[qid]||{};
+      saida.respostas[qid]={pergunta:q.enunciado,resp:r.resp||"",transcrita:!!r.transcrita,
+        tentou:r.tentou||null,chk:r.chk||{},feito:!!(estado.blocos[b.id]&&estado.blocos[b.id].feito),quando:(estado.blocos[b.id]||{}).quando||null};
+    });
+  });
+  var txt=JSON.stringify(saida,null,2);
+  modal("📥 Exportar progresso","Copie o conteúdo abaixo e guarde num arquivo .json, ou use o botão para baixar.",
+    [{texto:"Baixar arquivo",primario:true,acao:function(){
+        var a=document.createElement("a");
+        a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));
+        a.download="leitura_pulso_da_materia.json"; a.click();
+      }},{texto:"Fechar"}],true,txt);
+};
+document.getElementById("bImp").onclick=function(){
+  modal("📤 Importar progresso","Cole aqui o conteúdo do arquivo .json que você exportou antes.",
+    [{texto:"Importar",primario:true,acao:function(v){
+      try{
+        var o=JSON.parse(v); var novo={respostas:{},blocos:{},quando:null};
+        Object.keys(o.respostas||{}).forEach(function(k){
+          novo.respostas[k]={resp:o.respostas[k].resp||"",transcrita:!!o.respostas[k].transcrita,
+            tentou:o.respostas[k].tentou||null,chk:o.respostas[k].chk||{}};
+        });
+        Object.keys(o.blocos||{}).forEach(function(k){ if(o.blocos[k].feito) novo.blocos[k]={feito:true,quando:o.quando}; });
+        estado=novo; gravar(estado); location.reload();
+      }catch(e){ modal("Não deu certo","O texto colado não parece um arquivo de progresso válido. Tente copiar de novo.",[{texto:"Ok",primario:true}]); }
+    }},{texto:"Cancelar"}],true,"");
+};
+document.getElementById("bZero").onclick=function(){
+  modal("🗑️ Zerar tudo","Isso apaga todas as respostas desta Leitura Estendida neste aparelho. Não dá para desfazer.",
+   [{texto:"Sim, zerar",primario:true,acao:function(){apagar();estado={respostas:{},blocos:{},quando:null};location.reload();}},
+    {texto:"Cancelar"}]);
+};
+
+montar(); mostrarSalvo();
+</script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulso da Matéria · Resumo</title>
+<style>
+:root{--bg:#0d1017;--panel:#171b28;--panel2:#1d2332;--ink:#e7ecf7;--muted:#9aa6c4;
+--laranja:#ff7a3d;--laranja-d:#e05f22;--ciano:#38d9e0;--roxo:#9b7cff;--amarelo:#ffd23f;--alerta:#f8716b;--ok:#5ad16f;--line:#2d3650;--shadow:0 10px 30px rgba(0,0,0,.45);}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 700px at 80% -10%,#20130a 0,var(--bg) 60%);color:var(--ink);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 90px}
+header.top{background:linear-gradient(120deg,#2a1406,#b4521c 60%,#ff7a3d);border-radius:18px;padding:22px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+header.top:before{content:"🗺️";position:absolute;right:14px;top:-4px;font-size:76px;opacity:.16}
+header.top h1{margin:0 0 4px;font-size:1.5rem;color:#20100a}
+header.top .sub{color:#2a1406;font-weight:600}
+.kick{display:inline-block;background:#20100a;color:#ffcba3;font-size:.72rem;font-weight:700;letter-spacing:.12em;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin:16px 0;box-shadow:var(--shadow)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.btn{background:#1d233280;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:.9rem;cursor:pointer}
+.btn:hover{border-color:var(--ciano);color:var(--ciano)}
+.saveinfo{font-size:.78rem;color:var(--muted)}
+h2.sec{margin:28px 0 8px;font-size:1.3rem;border-left:4px solid var(--laranja);padding-left:12px}
+h2.sec.t2{border-color:var(--ciano)}
+h2.sec.t3{border-color:var(--roxo)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:12px 0;box-shadow:var(--shadow)}
+.card h3{margin:0 0 8px;color:var(--laranja)}
+.card.t2 h3{color:var(--ciano)}.card.t3 h3{color:var(--roxo)}
+.ex{background:#0f1420;border-left:3px solid var(--ciano);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:.94rem}
+.ex b{color:var(--ciano)}
+.formula{display:block;background:#0a1420;border:1px solid var(--ciano);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:1.15rem;color:#9ff0f5;text-align:center;font-weight:700;letter-spacing:.4px}
+.formula small{display:block;font-size:.72rem;color:var(--muted);font-weight:500;letter-spacing:0;margin-top:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.flip{perspective:1000px;height:200px;cursor:pointer}
+.flip .inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flip.on .inner{transform:rotateY(180deg)}
+.flip .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;justify-content:center;box-shadow:var(--shadow)}
+.flip .front{background:linear-gradient(135deg,#2a1406,#3a2a12)}
+.flip .front h3{margin:0;color:#fff}
+.flip .front .hint{font-size:.74rem;color:var(--muted);margin-top:8px}
+.flip .back{background:var(--panel2);transform:rotateY(180deg);overflow:auto;font-size:.9rem}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.9rem}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#0f1420;color:var(--laranja)}
+.postit{background:#f5d76e;color:#3a2e05;border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow);font-weight:600;transform:rotate(-.6deg)}
+.peg{background:#2a0e0c;border:1px solid var(--alerta);border-radius:10px;padding:12px 14px;margin:10px 0;color:#ffc2bd}
+.peg b{color:#ff9d96}
+.gloss dt{font-weight:700;color:var(--amarelo);margin-top:8px}
+.gloss dd{margin:0 0 4px 0;color:var(--ink)}
+.jump{display:block;width:100%;text-align:center;background:linear-gradient(120deg,var(--laranja-d),var(--laranja));color:#20100a;font-weight:700;text-decoration:none;padding:14px;border-radius:12px;margin-top:20px}
+.nav{display:flex;justify-content:space-between;margin-top:22px;flex-wrap:wrap;gap:10px}
+a.next,a.prev{display:inline-block;text-decoration:none;padding:11px 18px;border-radius:12px;font-weight:700}
+a.next{background:linear-gradient(120deg,var(--laranja-d),var(--laranja));color:#20100a}
+a.prev{background:#1d233280;color:var(--ink);border:1px solid var(--line)}
+.foot{text-align:center;color:var(--muted);font-size:.8rem;margin-top:30px}
+.modal-bg{position:fixed;inset:0;background:rgba(4,8,18,.7);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:440px;padding:22px;box-shadow:var(--shadow)}
+.modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="kick">PULSO DA MATÉRIA · PAINEL DE FÓRMULAS</span>
+    <h1>🗺️ Resumo — tudo o que cai na prova</h1>
+    <div class="sub">Termometria · Calorimetria · O estudo do som</div>
+  </header>
+
+  <div class="panel"><div class="bar">
+    <div><strong>Painel</strong><div class="saveinfo" id="saveinfo">Leitura salva sozinha.</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="doExport()">📥 Exportar</button>
+      <button class="btn" onclick="document.getElementById('imp').click()">📤 Importar</button>
+      <button class="btn" onclick="askReset()">🗑️ Zerar</button>
+      <input type="file" id="imp" accept="application/json" style="display:none" onchange="doImport(event)">
+    </div></div>
+    <div class="saveinfo" id="rol" style="margin-top:6px">Você já leu 0% do resumo.</div>
+  </div>
+
+  <!-- CAIXA DE FÓRMULAS -->
+  <div class="card">
+    <h3>🧮 Todas as fórmulas num lugar só</h3>
+    <span class="formula">&theta;K = &theta;C + 273 <small>Kelvin a partir de Celsius (some 273)</small></span>
+    <span class="formula">&theta;C / 5 = (&theta;F &minus; 32) / 9 = (&theta;K &minus; 273) / 5 <small>conversão entre as três escalas</small></span>
+    <span class="formula">Q = m &middot; c &middot; &Delta;&theta; <small>calor sensível (muda a temperatura)</small></span>
+    <span class="formula">Q = m &middot; L <small>calor latente (muda o estado físico)</small></span>
+    <span class="formula">T = 1 / f &nbsp;&nbsp; f = 1 / T <small>período e frequência são inversos</small></span>
+    <span class="formula">v = &lambda; &middot; f &nbsp;(= &lambda; / T) <small>velocidade da onda</small></span>
+    <div class="postit">📌 Nas contas, confira as unidades: massa em g, c em cal/(g·°C), Δθ em °C, L em cal/g; na onda, v em m/s, λ em metros e f em hertz (Hz).</div>
+  </div>
+
+  <!-- TERMOMETRIA -->
+  <h2 class="sec">🌡️ Termometria — medir o calor</h2>
+  <div class="card">
+    <h3>Temperatura, calor e sensação térmica</h3>
+    <p><b>Temperatura</b> = grau de agitação das partículas (energia de movimento). <b>Calor</b> = energia térmica <b>em trânsito</b>, que vai sempre do corpo mais quente para o mais frio até o <b>equilíbrio térmico</b>. <b>Sensação térmica</b> = percepção imprecisa de quente/frio (por isso usamos o termômetro).</p>
+    <div class="ex"><b>Equilíbrio térmico:</b> os corpos trocam calor até ficarem com a mesma temperatura.</div>
+  </div>
+
+  <div class="card">
+    <h3>As três escalas</h3>
+    <table>
+      <tr><th>Ponto</th><th>Celsius (°C)</th><th>Fahrenheit (°F)</th><th>Kelvin (K)</th></tr>
+      <tr><td>Fusão da água</td><td>0</td><td>32</td><td>273</td></tr>
+      <tr><td>Ebulição da água</td><td>100</td><td>212</td><td>373</td></tr>
+      <tr><td>Zero absoluto</td><td>−273</td><td>−459,4</td><td>0</td></tr>
+    </table>
+    <div class="ex"><b>Exemplos:</b> 25 °C = 298 K · 36 °C = 96,8 °F · 32 °F = 0 °C</div>
+    <div class="postit">📌 Só a Kelvin é absoluta: não tem número negativo, porque começa no zero absoluto (menor temperatura possível).</div>
+  </div>
+
+  <div class="card">
+    <h3>Dilatação térmica</h3>
+    <p>Aquecer → partículas se afastam → o corpo <b>dilata</b> (cresce). Esfriar → <b>contrai</b>. O <b>coeficiente de dilatação</b> mede a facilidade de dilatar (varia com o material). <b>Líquidos dilatam mais que sólidos; gases mais que líquidos.</b></p>
+    <table>
+      <tr><th>Tipo</th><th>Dimensões</th><th>Exemplos</th></tr>
+      <tr><td>Linear</td><td>1 (comprimento)</td><td>fios, trilhos, varais</td></tr>
+      <tr><td>Superficial</td><td>2 (área)</td><td>chapas, pisos cerâmicos</td></tr>
+      <tr><td>Volumétrica</td><td>3 (volume)</td><td>esferas, cubos, pontes</td></tr>
+    </table>
+    <div class="peg"><b>Pegadinha:</b> a <b>água</b> é a exceção — entre <b>0 °C e 4 °C</b>, ao esfriar, ela <b>aumenta</b> de volume (comportamento anômalo). Por isso o gelo flutua e os lagos congelam de cima para baixo.</div>
+  </div>
+
+  <!-- CALORIMETRIA -->
+  <h2 class="sec t2">🔥 Calorimetria — o calor viajando</h2>
+  <p class="saveinfo">Toque nas fichas para virar e ver como reconhecer cada forma de propagação.</p>
+  <div class="grid" id="flipProp"></div>
+
+  <div class="card t2">
+    <h3>Calor sensível × calor latente</h3>
+    <table>
+      <tr><th></th><th>Calor sensível</th><th>Calor latente</th></tr>
+      <tr><td><b>O que muda?</b></td><td>a temperatura</td><td>o estado físico</td></tr>
+      <tr><td><b>A temperatura…</b></td><td>sobe ou desce</td><td>fica constante</td></tr>
+      <tr><td><b>Fórmula</b></td><td>Q = m·c·Δθ</td><td>Q = m·L</td></tr>
+    </table>
+    <div class="ex"><b>Calor específico da água:</b> c = 1 cal/(g·°C). <b>Água:</b> L de fusão = 80 cal/g · L de vaporização = 540 cal/g.</div>
+    <div class="ex"><b>Equivalências:</b> 1 cal ≈ 4,184 J (≈ 4,2 J). Na nutrição, 1 Caloria (C maiúsculo) = 1 kcal = 1000 cal.</div>
+    <div class="postit">📌 Exemplos resolvidos: aquecer 50 g de c = 0,4 de 10 °C a 60 °C → Q = 50·0,4·50 = 1000 cal. Derreter 30 g de gelo a 0 °C → Q = 30·80 = 2400 cal.</div>
+    <div class="peg"><b>Pegadinha:</b> a areia tem calor específico MENOR que o da água, por isso esquenta e esfria mais rápido. Água custa a esquentar porque seu c é alto.</div>
+  </div>
+
+  <div class="card t2">
+    <h3>Curva de aquecimento da água</h3>
+    <p>No gráfico de temperatura × tempo: <b>rampas inclinadas</b> = só a temperatura muda (calor sensível). <b>Patamares horizontais</b> (linha reta) = mudança de estado, temperatura constante — a 0 °C na fusão e a 100 °C na vaporização (calor latente).</p>
+    <div class="ex">Para <b>fundir/vaporizar</b> o corpo <b>recebe</b> calor; para <b>solidificar/condensar</b> o corpo <b>cede</b> calor.</div>
+  </div>
+
+  <!-- SOM -->
+  <h2 class="sec t3">🔊 O estudo do som — a onda que vibra</h2>
+  <div class="card t3">
+    <h3>O que é uma onda</h3>
+    <p>Onda = perturbação que transporta <b>energia</b>, mas <b>não transporta matéria</b>. <b>Pulso</b> = perturbação única.</p>
+    <table>
+      <tr><th>Critério</th><th>Tipos</th></tr>
+      <tr><td>Natureza</td><td><b>Mecânica</b> (precisa de meio: som, mar, corda) × <b>Eletromagnética</b> (vai no vácuo: luz, rádio, celular)</td></tr>
+      <tr><td>Direção de propagação</td><td>uni (corda), bi (água), tridimensional (som no ar)</td></tr>
+      <tr><td>Direção de vibração</td><td><b>Transversal</b> (vibra a 90° — corda) × <b>Longitudinal</b> (vibra na mesma direção — o som)</td></tr>
+    </table>
+    <div class="ex"><b>Elementos:</b> crista (ponto mais alto), vale (mais baixo), <b>amplitude</b> (equilíbrio até a crista — mais amplitude = mais energia), <b>comprimento de onda λ</b> (entre duas cristas seguidas).</div>
+  </div>
+
+  <div class="card t3">
+    <h3>Período, frequência e velocidade</h3>
+    <span class="formula">T = 1/f &nbsp;&nbsp; f = 1/T &nbsp;&nbsp; v = &lambda; &middot; f</span>
+    <p><b>Período T</b> = tempo de uma oscilação completa = tempo ÷ nº de repetições. <b>Frequência f</b> = oscilações por segundo = nº de repetições ÷ tempo. Unidade: <b>hertz (Hz)</b> = 1 oscilação por segundo.</p>
+    <div class="ex"><b>Exemplos:</b> 15 oscilações em 60 s → T = 4 s, f = 0,25 Hz. · Corda com 20 oscilações em 2 s → f = 10 Hz; se λ = 0,3 m → v = 0,3·10 = 3 m/s.</div>
+    <div class="postit">📌 Com v constante: quanto MAIOR o comprimento de onda (λ), MENOR a frequência (f).</div>
+  </div>
+
+  <div class="card t3">
+    <h3>O som e a faixa audível</h3>
+    <p>O som é onda <b>mecânica</b> e <b>longitudinal</b>; <b>não se propaga no vácuo</b>. Forma-se por <b>compressão</b> e <b>rarefação</b> do ar. Velocidade no ar (~20 °C) ≈ <b>340 m/s</b>; é <b>mais rápido em líquidos e sólidos</b> (partículas mais próximas).</p>
+    <table>
+      <tr><th>Faixa</th><th>Frequência</th></tr>
+      <tr><td><b>Infrassom</b></td><td>abaixo de 20 Hz</td></tr>
+      <tr><td><b>Audível</b> (humano)</td><td>20 Hz a 20 000 Hz (20 kHz)</td></tr>
+      <tr><td><b>Ultrassom</b></td><td>acima de 20 kHz</td></tr>
+    </table>
+    <div class="ex"><b>Ecolocalização:</b> golfinhos e morcegos emitem ultrassom e ouvem o eco para se orientar.</div>
+  </div>
+
+  <div class="card t3">
+    <h3>Qualidades do som</h3>
+    <table>
+      <tr><th>Qualidade</th><th>O que define</th><th>Está ligada a…</th></tr>
+      <tr><td><b>Altura</b></td><td>agudo (fino) × grave (grosso)</td><td>FREQUÊNCIA</td></tr>
+      <tr><td><b>Intensidade</b></td><td>forte × fraco (em decibel, dB)</td><td>AMPLITUDE / energia</td></tr>
+      <tr><td><b>Timbre</b></td><td>identifica a fonte (piano × violino)</td><td>FORMA da onda</td></tr>
+    </table>
+    <div class="peg"><b>Pegadinha:</b> <b>altura</b> NÃO é volume! Altura é agudo/grave (frequência); intensidade é forte/fraco (amplitude). Acima de ~120 dB o som pode lesar a audição.</div>
+  </div>
+
+  <div class="card t3">
+    <h3>Ressonância e eco</h3>
+    <p><b>Ressonância:</b> um objeto vibra junto quando a fonte tem a mesma frequência natural dele (taça de cristal que quebra; ponte de Tacoma, 1940).</p>
+    <p><b>Eco:</b> reflexão do som. O ouvido só separa dois sons com intervalo ≥ 0,1 s. Como v = 340 m/s, em 0,1 s o som faz 34 m (ida e volta) → é preciso estar a pelo menos <b>17 m</b> da superfície.</p>
+  </div>
+
+  <!-- GLOSSÁRIO -->
+  <h2 class="sec">📚 Glossário rápido</h2>
+  <div class="card">
+    <dl class="gloss">
+      <dt>Equilíbrio térmico</dt><dd>Momento em que dois corpos atingem a mesma temperatura e param de trocar calor.</dd>
+      <dt>Calor específico (c)</dt><dd>Quanto calor 1 grama de um material precisa para variar 1 °C. Água = 1 cal/(g·°C).</dd>
+      <dt>Calor latente (L)</dt><dd>Calor por grama para mudar o estado físico sem mudar a temperatura. Água: fusão 80, vaporização 540 cal/g.</dd>
+      <dt>Isolante térmico</dt><dd>Material que conduz mal o calor (madeira, borracha, ar, papel). O oposto é o condutor (metais).</dd>
+      <dt>Comprimento de onda (λ)</dt><dd>Distância entre duas cristas seguidas da onda.</dd>
+      <dt>Amplitude</dt><dd>Distância da posição de equilíbrio até a crista (ou o vale). Mais amplitude = mais energia = som mais forte.</dd>
+      <dt>Hertz (Hz)</dt><dd>Unidade de frequência: 1 Hz = 1 oscilação por segundo.</dd>
+    </dl>
+  </div>
+
+  <a class="jump" href="simulado.html">Fechei o resumo — quero encarar o 📝 Simulado! →</a>
+
+  <div class="nav">
+    <a class="prev" href="leitura-estendida.html">← Leitura Estendida</a>
+    <a class="next" href="simulado.html">Próximo: 📝 Simulado →</a>
+  </div>
+  <div class="foot">Pulso da Matéria · Resumo · jovem aprendiz</div>
+</div>
+
+<div class="modal-bg" id="modalbg"><div class="modal"><h3 id="mtit"></h3><p id="mtxt" style="color:var(--muted)"></p>
+  <div class="row"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn primary" id="mok" style="background:linear-gradient(120deg,var(--laranja-d),var(--laranja));color:#20100a;font-weight:700;border:none">OK</button></div></div></div>
+
+<script>
+const FLIPS=[
+ {t:"Condução",h:"partícula a partícula · sólidos",b:"O calor passa de molécula a molécula, sem o material se mover. <b>Precisa de meio material</b>; típica dos <b>sólidos</b>. Metais conduzem bem; madeira, ar e borracha são isolantes.<br><br><i>Ex.: a colher de metal esquenta na sopa.</i>"},
+ {t:"Convecção",h:"correntes · líquidos e gases",b:"O fluido quente fica menos denso e sobe; o frio desce — são as <b>correntes de convecção</b>. <b>Precisa de meio material</b>.<br><br><i>Ex.: o ar quente sobe no forno; a geladeira; as brisas.</i>"},
+ {t:"Irradiação",h:"ondas · até no vácuo",b:"O calor viaja por <b>ondas eletromagnéticas</b> e <b>NÃO precisa de meio material</b>: atravessa o vácuo.<br><br><i>Ex.: o calor do Sol chegando à Terra pelo espaço vazio.</i>"}
+];
+const g=document.getElementById('flipProp');
+FLIPS.forEach((f,i)=>{
+  const d=document.createElement('div');d.className='flip';d.onclick=()=>d.classList.toggle('on');
+  d.innerHTML=`<div class="inner"><div class="face front"><h3>${f.t}</h3><div class="hint">${f.h} · toque para virar</div></div>
+    <div class="face back">${f.b}</div></div>`;
+  g.appendChild(d);
+});
+
+/* ---- salvar rolagem máxima ---- */
+const KEY="fisica9_resumo";let mem={};
+function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null;}catch(e){return mem[KEY]||null;}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(STATE));}catch(e){mem[KEY]=STATE;}}
+let STATE=load()||{rolagem:0,ts:null};
+function pctScroll(){const h=document.documentElement.scrollHeight-window.innerHeight;if(h<=0)return 100;return Math.min(100,Math.round(window.scrollY/h*100));}
+function onScroll(){const p=pctScroll();if(p>STATE.rolagem){STATE.rolagem=p;STATE.ts=new Date().toISOString();persist();}
+  document.getElementById('rol').textContent="Você já leu "+STATE.rolagem+"% do resumo.";}
+window.addEventListener('scroll',onScroll,{passive:true});
+document.getElementById('rol').textContent="Você já leu "+STATE.rolagem+"% do resumo.";
+if(STATE.ts){const d=new Date(STATE.ts);document.getElementById('saveinfo').textContent="Salvo às "+d.toLocaleTimeString('pt-BR')+".";}
+
+function doExport(){const blob=new Blob([JSON.stringify(STATE,null,2)],{type:"application/json"});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="pulso_resumo.json";a.click();URL.revokeObjectURL(a.href);}
+function doImport(ev){const f=ev.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{STATE=JSON.parse(rd.result);persist();location.reload();}catch(e){openModal("Arquivo inválido","Não consegui ler esse arquivo.",null);}};rd.readAsText(f);}
+let modalCb=null;
+function openModal(t,x,cb){document.getElementById('mtit').textContent=t;document.getElementById('mtxt').textContent=x;modalCb=cb;document.getElementById('mok').style.display=cb?'inline-block':'none';document.getElementById('modalbg').style.display='flex';}
+function closeModal(){document.getElementById('modalbg').style.display='none';modalCb=null;}
+document.getElementById('mok').onclick=()=>{if(modalCb)modalCb();closeModal();};
+function askReset(){openModal("Zerar o resumo?","Isto apaga o quanto você já leu. Recomeçar?",()=>{try{localStorage.removeItem(KEY);}catch(e){}mem={};location.reload();});}
+</script>
+</body>
+</html>
